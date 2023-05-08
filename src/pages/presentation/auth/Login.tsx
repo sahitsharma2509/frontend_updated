@@ -62,12 +62,12 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
 	const [loginUsername, setLoginUsername] = useState('');
 
 
-	const usernameCheck = (username: string) => {
-		return !!getUserDataWithUsername(username);
+	const usernameCheck = (inputUsername: string) => {
+		return !!getUserDataWithUsername(inputUsername);
 	};
 
-	const passwordCheck = (username: string, password: string) => {
-		return getUserDataWithUsername(username).password === password;
+	const passwordCheck = (inputUsername: string, inputPassword: string) => {
+		return getUserDataWithUsername(inputUsername).password === inputPassword;
 	};
 
 	const validateForm = () => {

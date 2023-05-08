@@ -35,7 +35,7 @@ import {
   
   
   // ? FileUpload Component
-  const FileUpload: React.FC<IFileUploadProps> = ({ limit, name }) => {
+  const FileUpload: React.FC<IFileUploadProps> = ({ limit, name :inputName }) => {
   // ? Form Context
     const {
       control,
@@ -43,7 +43,7 @@ import {
     } = useFormContext();
   
     // ? State with useState()
-    const { field } = useController({ name, control });
+    const { field } = useController({ name : inputName, control });
     const [singleFile, setSingleFile] = useState<File[]>([]);
     const [fileList, setFileList] = useState<File[]>([]);
     const wrapperRef = useRef<HTMLDivElement>(null);
@@ -75,7 +75,7 @@ const onFileDrop = useCallback(
   
 
     },
-    [field, fileList, limit, singleFile]
+    [field, limit, singleFile]
   );
   
   // ? Remove multiple PDFs
@@ -149,7 +149,7 @@ const onFileDrop = useCallback(
                 </Typography>
               </Stack>
               <Controller
-                name={name}
+                name={inputName}
                 defaultValue=''
                 control={control}
                 render={({ field: { name, onBlur, ref } }) => (
@@ -177,9 +177,9 @@ const onFileDrop = useCallback(
       
           <FormHelperText
             sx={{ textAlign: 'center', my: 1 }}
-            error={!!errors[name]}
+            error={!!errors[inputName]}
           >
-            {errors[name]?.message as string || ''}
+            {errors[inputName]?.message as string || ''}
 
 
           </FormHelperText>

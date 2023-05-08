@@ -1,4 +1,4 @@
-import React, { createContext, FC, ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback  } from 'react';
 import PropTypes from 'prop-types';
 import { api } from '../apiHelper'
 const BASE_URL = 'http://localhost:8000';
@@ -36,11 +36,11 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 
   const apiClient = api(updateToken);
 
-  const loadUser = async () => {
+  const loadUser = useCallback(async () => {
     if (accessToken) {
       try {
         const userResponse = await apiClient.get('/user/');
-
+  
         if (userResponse.data.id !== null && userResponse.data.username !== '') {
           setUser(userResponse.data.username);
           setUserData(userResponse.data);
@@ -54,11 +54,12 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
       setUser(null);
       setUserData(null);
     }
-  };
-
-  useEffect(() => {
-    loadUser();
-  }, [accessToken]);
+  }, [accessToken, apiClient]);
+  
+// eslint-disable-next-line react-hooks/exhaustive-deps
+useEffect(() => {
+  loadUser();
+}, [accessToken, loadUser]);
 
   useEffect(() => {
     if (accessToken) {
@@ -77,7 +78,7 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
       updateToken,
       loadUser, // Add this line
     }),
-    [user, userData, accessToken],
+    [user, userData, accessToken,loadUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

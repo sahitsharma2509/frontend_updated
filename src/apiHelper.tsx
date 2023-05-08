@@ -42,7 +42,7 @@ const api = (updateToken?: (newToken: string | null) => void) => {
           const accessToken = await refreshAccessToken();
   
           if (accessToken) {
-            originalRequest.headers['Authorization'] = `Bearer ${accessToken}`;
+            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
             return instance(originalRequest);
           } else {
             updateToken && updateToken(null);
