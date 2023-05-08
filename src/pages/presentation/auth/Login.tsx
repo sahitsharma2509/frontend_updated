@@ -124,7 +124,7 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
 		  const response = await axios.post(`${BASE_URL}/signup`, data, { headers });
 		  console.log(response);
 
-		  const { setUser } = useContext(AuthContext);
+		  
 
 	      if (response.status==200)
 		  {
@@ -132,9 +132,11 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
 		  alert("Your account has been created successfully. Please login.");
 		  navigate("/auth/login");
 		  }
-		} catch (error: unknown) {
+		} catch (error: any) {
 		  // ... Handle errors
 		}
+		setIsLoading(false);
+
 	  };
 	  
 
