@@ -156,6 +156,8 @@ axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 					is_user: true,
 					text: messageText,
 				};
+
+				console.log("Data",data)
 		
 				const response = await axios.post(`${BASE_URL}/chat/message/`, data, {
 					headers: {

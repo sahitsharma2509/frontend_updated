@@ -130,6 +130,7 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
 		  {
 		  // Handle successful registration
 		  alert("Your account has been created successfully. Please login.");
+		  setSingUpStatus(false);
 		  navigate("/auth/login");
 		  }
 		} catch (error: any) {
