@@ -59,7 +59,7 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
 // eslint-disable-next-line react-hooks/exhaustive-deps
 useEffect(() => {
   loadUser();
-}, [accessToken]);
+}, [accessToken,loadUser]);
 
   useEffect(() => {
     if (accessToken) {
