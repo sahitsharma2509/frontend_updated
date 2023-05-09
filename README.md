@@ -35,11 +35,7 @@ Node version must be 16 or higher.
 
 To continue changing what you see in the demo
 
-```cd facit```
-
-To start with a lite copy
-
-```cd facit-lite```
+```cd frontend_updated```
 
 ### npm
 ```npm install```
