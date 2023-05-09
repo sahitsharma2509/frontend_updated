@@ -1,4 +1,4 @@
-# Facit | React Admin Dashboard Template V4.2.0
+# Updated 1.0
 
 #### Required files (Checked ones should definitely be in your project)
 - [ ] .storybook
