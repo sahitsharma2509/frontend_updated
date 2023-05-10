@@ -23,39 +23,11 @@ import {api,refreshAccessToken } from '../apiHelper'
 const App = () => {
 	const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 	getOS();
-	const [isAuthenticating, setIsAuthenticating] = useState(true);
 	useVerifyAuth()
 
 	dayjs.extend(localizedFormat);
 	dayjs.extend(relativeTime);
-	const [user, setUser] = useState(null);
 
-	const loadUser = async () => {
-		const token = localStorage.getItem("access_token");
-	  
-		if (token) {
-		  try {
-			const userResponse = await axios.get(`${BASE_URL}/user/`, {
-			  headers: {
-				Authorization: `Bearer ${token}`,
-			  },
-			});
-	  
-			if (setUser && userResponse.data.username) {
-			  setUser(userResponse.data);
-			}
-		  } catch (error) {
-			console.error(error);
-		  }
-		}
-	  
-		setIsAuthenticating(false);
-	};
-	  
-
-	useEffect(() => {
-		loadUser();
-	}, []);
 
 	const { themeStatus, darkModeStatus } = useDarkMode();
 	const theme = {
