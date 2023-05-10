@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 
 const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem('refresh_token');

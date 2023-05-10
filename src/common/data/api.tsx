@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000'; // Replace with your Django backend URL
+const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL // Replace with your Django backend URL
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem("access_token");

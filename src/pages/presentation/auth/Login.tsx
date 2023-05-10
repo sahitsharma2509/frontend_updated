@@ -52,7 +52,7 @@ const Login: FC<ILoginProps> = ({ isSignUp }) => {
 
 	const [signInPassword, setSignInPassword] = useState<boolean>(false);
 	const [singUpStatus, setSingUpStatus] = useState<boolean>(!!isSignUp);
-	const BASE_URL = 'http://localhost:8000';
+	const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
     const navigate = useNavigate();
     const [email, setEmail] = useState('');
 	const [username, setUsername] = useState('');

@@ -1,7 +1,7 @@
 import React, { createContext, FC, ReactNode, useEffect, useMemo, useState, useCallback  } from 'react';
 import PropTypes from 'prop-types';
 import { api } from '../apiHelper'
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 
 export interface IAuthContextProps {
   user: string | null;

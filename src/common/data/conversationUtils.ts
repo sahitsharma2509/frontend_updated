@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Cookies from "js-cookie";
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 const csrftoken = Cookies.get("csrftoken");
 
 export const createConversation = async (token: string, pdfId: string | null = null) => {

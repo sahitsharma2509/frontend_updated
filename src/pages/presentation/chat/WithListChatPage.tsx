@@ -36,7 +36,7 @@ const csrftoken = Cookies.get("csrftoken");
 axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 
 		const [messageText, setMessageText] = useState('');
-		const BASE_URL = 'http://localhost:8000';
+		const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 
 		const [activeTab, setActiveTab] = useState<{ conversation_id: number } | null>(null);
 

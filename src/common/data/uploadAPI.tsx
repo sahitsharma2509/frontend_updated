@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8000/api';
+const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
+
+
+const API_URL = `${BASE_URL}/api`;
 const getAuthHeaders = () => {
     const token = localStorage.getItem("access_token");
     return {

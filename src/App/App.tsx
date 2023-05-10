@@ -21,7 +21,7 @@ import useVerifyAuth from '../pages/presentation/auth/userVerify';
 import {api,refreshAccessToken } from '../apiHelper'
 
 const App = () => {
-	const BASE_URL = 'http://localhost:8000';
+	const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 	getOS();
 	const [isAuthenticating, setIsAuthenticating] = useState(true);
 	useVerifyAuth()
