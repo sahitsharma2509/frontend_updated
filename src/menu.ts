@@ -56,6 +56,12 @@ export const demoPagesMenu = {
 				path: 'chat/test2',
 				icon: 'Quickreply',
 			},
+			test3: {
+				id: 'withListYT',
+				text: 'Chat with Youtube',
+				path: 'chat/test3',
+				icon: 'Quickreply',
+			},
 
 		},
 	},

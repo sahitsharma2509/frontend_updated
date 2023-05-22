@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import classNames from 'classnames';
 import data from './helper/dummyKnowledgeData';
 import { PdfUploadPage } from '../doc-loaders/PdfUploadPage';
+import YouTubeLinkInput from '../../../components/Youtubeinput';
 import SubHeader, {
 	SubHeaderLeft,
 	SubHeaderRight,
@@ -59,6 +60,8 @@ const KnowledgeViewPage = () => {
 						<h3 className='text-muted'>{item.description}</h3>
 					</div>
 					<PdfUploadPage />
+
+					<YouTubeLinkInput />
 				</div>
 			</Page>
 		</PageWrapper>

@@ -10,16 +10,16 @@ import { TColor } from '../../../../type/color-type';
 export type TTags = { text: string; color: TColor };
 const TAGS: { [key: string]: TTags } = {
 	NPM: {
-		text: 'NPM',
-		color: COLORS.SUCCESS.name,
-	},
-	YARN: {
-		text: 'Yarn',
+		text: 'Youtube',
 		color: COLORS.DANGER.name,
 	},
+	YARN: {
+		text: 'URL',
+		color: COLORS.INFO.name,
+	},
 	BOOTSTRAP: {
-		text: 'Bootstrap',
-		color: COLORS.PRIMARY.name,
+		text: 'PDF',
+		color: COLORS.SUCCESS.name,
 	},
 	DEPENDENCIES: {
 		text: 'Dependencies',
@@ -55,10 +55,10 @@ const data: {
 }[] = [
 	{
 		id: 1,
-		title: 'Utility API',
-		description: 'The utility API is a Sass-based tool to generate utility classes.',
+		title: 'Youtube',
+		description: 'Add any youtube url to your knowledge base.',
 		image: Img1,
-		tags: [TAGS.NPM, TAGS.YARN, TAGS.BOOTSTRAP],
+		tags: [TAGS.NPM],
 		color: COLORS.WARNING.name,
 		categories: [CATEGORIES.DOCUMENTATION, CATEGORIES.SETTINGS],
 		content:
@@ -66,10 +66,10 @@ const data: {
 	},
 	{
 		id: 2,
-		title: 'Background',
-		description: 'Convey meaning through background-color and add decoration with gradients.',
+		title: 'PDF',
+		description: 'Add any PDF document to your knowledge base.',
 		image: Img2,
-		tags: [TAGS.NPM, TAGS.YARN, TAGS.DEPENDENCIES],
+		tags: [TAGS.BOOTSTRAP],
 		color: COLORS.PRIMARY.name,
 		categories: [CATEGORIES.DOCUMENTATION],
 		content:
@@ -77,16 +77,17 @@ const data: {
 	},
 	{
 		id: 3,
-		title: 'Borders',
+		title: 'URL',
 		description:
-			'Use border utilities to quickly style the border and border-radius of an element. Great for images, buttons, or any other element.',
+			'Add any website to your knowledge base.',
 		image: Img3,
-		tags: [TAGS.NPM, TAGS.YARN],
+		tags: [TAGS.YARN],
 		color: COLORS.DANGER.name,
 		categories: [CATEGORIES.DOCUMENTATION, CATEGORIES.SETTINGS],
 		content:
 			'Pellentesque vehicula dolor a nisi tincidunt, vitae ornare enim tempus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nunc viverra neque vel diam hendrerit volutpat. Pellentesque placerat justo a sollicitudin molestie. Etiam bibendum lacus nec tortor viverra, a consectetur neque elementum. Donec at sodales purus. Fusce in urna ac elit pulvinar efficitur in non eros. Praesent eleifend, dolor nec sollicitudin eleifend, est massa egestas metus, vitae aliquet magna erat sed turpis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Mauris rutrum a augue et suscipit. In id augue ullamcorper libero tincidunt luctus.',
 	},
+	/*
 	{
 		id: 4,
 		title: 'Colors',
@@ -146,6 +147,7 @@ const data: {
 		content:
 			'Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Morbi rhoncus, turpis mollis tincidunt feugiat, augue enim dapibus ipsum, et placerat neque nibh sit amet justo. Praesent venenatis ex eu massa aliquam congue eu sed diam. Vestibulum suscipit lacus et justo ornare, at rutrum erat malesuada. Fusce ut rutrum dui. Donec posuere fringilla urna, ut efficitur mi feugiat et. In ut elit at turpis dapibus pretium quis vel turpis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Etiam rhoncus vel erat a finibus. Nulla facilisi. Suspendisse ornare rhoncus sollicitudin. Curabitur mollis, erat id tincidunt efficitur, arcu sem elementum enim, ac lacinia tortor purus vel ante. Nullam non feugiat magna.',
 	},
+	*/
 ];
 
 export default data;

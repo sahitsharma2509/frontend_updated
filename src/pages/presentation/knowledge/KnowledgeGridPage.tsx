@@ -9,7 +9,6 @@ import Button from '../../../components/bootstrap/Button';
 import Select from '../../../components/bootstrap/forms/Select';
 import Card, { CardBody, CardTitle } from '../../../components/bootstrap/Card';
 import Badge from '../../../components/bootstrap/Badge';
-import { PdfUploadPage } from '../doc-loaders/PdfUploadPage';
 import data, { CATEGORIES, TTags } from './helper/dummyKnowledgeData';
 import { demoPagesMenu } from '../../../menu';
 import useDarkMode from '../../../hooks/useDarkMode';
@@ -134,7 +133,7 @@ const KnowledgeGridPage = () => {
 			<Page>
 				<div className='row'>
 					<div className='col-12 text-center my-5'>
-						<span className='display-5 fw-bold'>Hello, May I help you?</span>
+						<span className='display-5 fw-bold'>Create your knowledge base</span>
 					</div>
 					<div
 						className='col-xxl-6 mx-auto text-center my-5'

@@ -16,6 +16,7 @@ const APP = {
 		WITH_LIST: lazy(() => import('../pages/presentation/chat/WithListChatPage')),
 		TEST : lazy(() => import('../pages/presentation/chat/test')),
 		TEST2 : lazy(() => import('../pages/presentation/chat/test2')),
+		TEST3 : lazy(() => import('../pages/presentation/chat/test3')),
 	},
 };
 
@@ -99,6 +100,10 @@ const presentation: RouteProps[] = [
 {
 	path: demoPagesMenu.chat.subMenu.test2.path,
 	element: <APP.CHAT.TEST2 />,
+},
+{
+	path: demoPagesMenu.chat.subMenu.test3.path,
+	element: <APP.CHAT.TEST3 />,
 },
 	/**
 	 * END - App
