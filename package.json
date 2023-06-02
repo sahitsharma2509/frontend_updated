@@ -82,6 +82,7 @@
 		"jsx-to-string": "^1.4.0",
 		"jwt-decode": "^3.1.2",
 		"minimatch": ">=3.0.5",
+		"openai-streaming-hooks": "^2.0.0",
 		"pascalcase": "^2.0.0",
 		"payment": "^2.4.6",
 		"prismjs": "^1.29.0",

@@ -12,6 +12,7 @@ export interface IMessages {
     text: string;
     created_at: string;
     user: IUserProps
+    isLastMessage?: boolean;
 }
 
 

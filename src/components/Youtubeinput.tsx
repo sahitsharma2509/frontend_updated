@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { sendYouTubeUrl } from '../common/data/uploadAPI'; // Adjust the import path to where your API functions are defined
+import Input from '../components/bootstrap/forms/Input';
+import Button from '../components/bootstrap/Button';
 
 const YouTubeLinkInput = () => {
   const [link, setLink] = useState("");
@@ -41,7 +43,7 @@ const YouTubeLinkInput = () => {
   
   return (
     <form onSubmit={handleSubmit}>
-      <input type="url" value={link} onChange={handleInputChange} style={{ borderColor: isValid ? "" : "red" }}/>
+      <Input type="url" value={link} onChange={handleInputChange} style={{ borderColor: isValid ? "" : "red" }}/>
       {!isValid && <div>Please enter a valid YouTube link.</div>}
       <button type="submit">Submit</button>
       {response && <div>Response: {JSON.stringify(response)}</div>}

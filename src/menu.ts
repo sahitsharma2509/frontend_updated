@@ -18,6 +18,12 @@ export const demoPagesMenu = {
 				path: 'knowledge/grid',
 				icon: 'AutoStories',
 			},
+			test: {
+				id: 'test',
+				text: 'test',
+				path: 'knowledge/test',
+				icon: 'AutoStories',
+			},
 			itemID: {
 				id: 'itemID',
 				text: 'itemID',
@@ -44,12 +50,6 @@ export const demoPagesMenu = {
 				path: 'chat/with-list',
 				icon: 'Quickreply',
 			},
-			test: {
-				id: 'withListPDF',
-				text: 'Chat with PDF',
-				path: 'chat/test',
-				icon: 'Quickreply',
-			},
 			test2: {
 				id: 'withListBaby',
 				text: 'Chat with BabyAGI',
@@ -58,7 +58,7 @@ export const demoPagesMenu = {
 			},
 			test3: {
 				id: 'withListYT',
-				text: 'Chat with Youtube',
+				text: 'Chat with Docs',
 				path: 'chat/test3',
 				icon: 'Quickreply',
 			},

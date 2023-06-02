@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams  } from 'react-router-dom';
 import Button from '../../../components/bootstrap/Button';
 import Page from '../../../layout/Page/Page';
 import Card, {
@@ -21,6 +21,8 @@ import axios from 'axios';
 import AuthContext from '../../../contexts/authContext';
 import Cookies from "js-cookie";
 import holderimage from '../../../assets/img/holder.png'
+import { ConversationListItem } from '../../../components/Chat';
+
 
 interface MessagesDict {
 	[conversationId: string]: IMessages[];
@@ -39,6 +41,12 @@ interface PdfDocument {
   user: number;
   name: string;
 }
+
+interface Conversation {
+	id: number;
+	// ... other properties
+  }
+
 
 const WithListPDFPage = () => {
 	const navigate = useNavigate();
@@ -59,6 +67,7 @@ axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 		const { mobileDesign } = useContext(ThemeContext);
 		const [listShow, setListShow] = useState<boolean>(true);
 		const [conversations, setConversations] = useState<any[]>([]);
+		const { conversationId } = useParams();
 
 		const [messages, setMessages] = useState<MessagesDict>({});
         function getMessages(conversationId: string) {
@@ -74,25 +83,43 @@ axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 		}
 
  
+		console.log("sup",conversationId);
 
+		// useEffect for fetching and setting conversations based on the conversation id from the URL
+useEffect(() => {
+	const fetchAndSetConversations = async () => {
+		const fetchedConversations = await fetchConversations();
+		setConversations(fetchedConversations);
+		console.log("hLLLO",conversationId);
+		// If there's a conversation id in the URL, set it as the active tab
+		if (conversationId) {
+			console.log(conversationId);
+			const conversationIdNumber = Number(conversationId);
+			const foundConversation = fetchedConversations.find((conv: Conversation) => conv.id === conversationIdNumber);
+			if (foundConversation) {
+				setActiveTab({ conversation_id: foundConversation.id });
+			}
+		}
+	};
 
-		useEffect(() => {
-			const fetchData = async () => {
-			  const fetchedConversations = await fetchConversations();
-			  setConversations(fetchedConversations);
-		  
-			  if (activeTab && activeTab.conversation_id) {
-				const fetchedMessages = await fetchMessagesByConversationId(activeTab.conversation_id);
-				setMessages((prevMessages) => ({
-				  ...prevMessages,
-				  [activeTab.conversation_id]: fetchedMessages,
-				}));
-			  }
-			};
-		  
-			fetchData();
-		  }, [activeTab]);
-	  
+	fetchAndSetConversations();
+}, [conversationId]);  // Only run when conversationId changes
+
+// useEffect for fetching messages of the active conversation
+useEffect(() => {
+	const fetchAndSetMessages = async () => {
+		// If there's an active tab, fetch its messages
+		if (activeTab && activeTab.conversation_id) {
+			const fetchedMessages = await fetchMessagesByConversationId(activeTab.conversation_id);
+			setMessages((prevMessages) => ({
+				...prevMessages,
+				[activeTab.conversation_id]: fetchedMessages,
+			}));
+		}
+	};
+
+	fetchAndSetMessages();
+}, [activeTab]);  // Only run when activeTab changes
 		
 /*
 		const handleCreateConversationClick = async () => {
@@ -165,7 +192,7 @@ axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 				
 		
 				console.log("Response from backend:", response);
-        console.log("response.data.output:", response.data.output);
+        		console.log("response.data.output:", response.data.output);
 		
 				if (response.status===200) {
 					// Handle the success case, such as updating the UI with the new message
@@ -257,7 +284,7 @@ axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 
 
 		return (
-            <PageWrapper title={demoPagesMenu.chat.subMenu.test.text}>
+            <PageWrapper title={demoPagesMenu.chat.subMenu.test3.text}>
             <Page>
               <div className='row h-100'>
               {listShow && (
@@ -272,16 +299,17 @@ axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
       <CardBody isScrollable>
         {conversations && conversations.length ? (
           conversations
-          .filter((conv) => conv.pdf_document !== null)
-            .map((conv) => (
-              <div
-                key={conv.id}
-                className='list-group-item list-group-item-action'
-                onClick={() => getListShow(conv.id)}
-              >
-                {conv.id || 'Untitled PDF Conversation'}
-              </div>
-            ))
+		  .filter((conv) => conv.pdf_document !== null)
+		  .map((conv) => (
+			<ConversationListItem
+			  key={conv.id}
+			  id={conv.id.toString()}
+			  title={conv.title || 'Untitled PDF Conversation'}
+			  className='list-group-item list-group-item-action'
+			  onClick={() => getListShow(conv.id)}
+			  isActive={activeTab?.conversation_id === conv.id}
+			/>
+		  ))
         ) : (
           <div>No PDF conversations available</div>
         )}
@@ -347,6 +375,6 @@ axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 
 		  );
 		  
-};
+}; 
 
 export default WithListPDFPage;

@@ -1,12 +1,14 @@
 import axios from 'axios';
 import Cookies from "js-cookie";
-
+import { useNavigate } from 'react-router';
 const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 const csrftoken = Cookies.get("csrftoken");
 
-export const createConversation = async (token: string, pdfId: string | null = null) => {
+
+
+export const createConversation = async (token: string | null = null, knowledgebaseId: string | null = null) => {
   try {
-    const payload = pdfId ? { pdf_document_id: pdfId } : {};
+    const payload = knowledgebaseId ? { knowledge_base_id: knowledgebaseId } : {};
     console.log("payload",payload)
     const response = await axios.post(`${BASE_URL}/chat/conversations/`, payload, {
       headers: {
@@ -24,3 +26,4 @@ export const createConversation = async (token: string, pdfId: string | null = n
     throw error;
   }
 };
+

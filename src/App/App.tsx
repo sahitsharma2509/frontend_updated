@@ -24,6 +24,7 @@ const App = () => {
 	const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
 	getOS();
 	useVerifyAuth()
+	
 
 	dayjs.extend(localizedFormat);
 	dayjs.extend(relativeTime);
@@ -75,7 +76,7 @@ const App = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<ToastProvider components={{ ToastContainer, Toast }}>
-			<AuthContextProvider>
+
 
 					<div
 						ref={ref}
@@ -91,7 +92,7 @@ const App = () => {
 					<Portal id='portal-notification'>
 						<ReactNotifications />
 					</Portal>
-					</AuthContextProvider>
+
 			</ToastProvider>
 		</ThemeProvider>
 	);

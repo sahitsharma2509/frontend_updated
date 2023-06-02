@@ -1,10 +1,60 @@
-import React, { FC, HTMLAttributes, ReactNode } from 'react';
+import React, { FC, HTMLAttributes, ReactNode ,useState, useEffect , useRef} from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import Avatar from './Avatar';
 import useDarkMode from '../hooks/useDarkMode';
 import { TColor } from '../type/color-type';
 import holderimage from '../assets/img/holder.png'
+
+
+
+
+interface IConversationListItemProps extends HTMLAttributes<HTMLDivElement> {
+	id: string;
+	className?: string;
+	isActive?: boolean;
+	title?: string;
+}
+
+export const ConversationListItem: FC<IConversationListItemProps> = ({
+	id,
+	className,
+	isActive,
+	title,
+	...props
+}) => {
+	const { darkModeStatus } = useDarkMode();
+
+	return (
+		<div className={classNames('col-12 cursor-pointer', className)} {...props}>
+			<div
+				className={classNames(
+					'd-flex align-items-center',
+					'p-3 rounded-2',
+					'transition-base',
+					{
+						'bg-l25-info-hover': !darkModeStatus,
+						'bg-lo50-info-hover': darkModeStatus,
+						'bg-l10-info': !darkModeStatus && isActive,
+						'bg-lo25-info': darkModeStatus && isActive,
+					},
+				)}
+			>
+				<div className='d-grid'>
+					<div className='d-flex flex-wrap d-xxl-block'>
+						<span className='fw-bold fs-5 me-3'>{`Conversation ID: ${id}`}</span>
+					</div>
+					<div className='text-muted text-truncate'>{title}</div>
+				</div>
+			</div>
+		</div>
+	);
+};
+
+
+
+
+
 
 
 
@@ -204,21 +254,68 @@ interface IChatMessagesProps extends HTMLAttributes<HTMLDivElement> {
 		message?: string | number;
 	}[];
 	isUser?: boolean;
+	isNewConversation?: boolean;
 }
-export const ChatMessages: FC<IChatMessagesProps> = ({ messages, isUser, ...props }) => {
+
+export const ChatMessages: FC<IChatMessagesProps> = ({ messages, isUser, isNewConversation, ...props }) => {
+	const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+	const [currentMessageText, setCurrentMessageText] = useState('');
+  
+	const currentMessageTextRef = useRef('');
+
+useEffect(() => {
+  if (!isUser && messages[currentMessageIndex]) {
+    const message = String(messages[currentMessageIndex].message || '');
+    if (isNewConversation) {
+      const intervalId = setInterval(() => {
+        setCurrentMessageText((prevText) => {
+          const newMessageText = prevText + message.charAt(prevText.length);
+          currentMessageTextRef.current = newMessageText;
+          return newMessageText;
+        });
+        if (currentMessageTextRef.current === message) {
+          clearInterval(intervalId);
+          setCurrentMessageIndex((prevIndex) => prevIndex + 1);
+          setCurrentMessageText('');
+        }
+      }, 15);
+      return () => clearInterval(intervalId);
+    } else {
+      setCurrentMessageText(message);
+      setCurrentMessageIndex((prevIndex) => prevIndex + 1);
+    }
+  }
+}, [messages, currentMessageIndex, isUser, isNewConversation]);
+
+  
 	return (
-		// eslint-disable-next-line react/jsx-props-no-spreading
-		<div className='chat-messages' {...props}>
-			{messages.map((i) => (
-				<div
-					key={i.id}
-					className={classNames('chat-message', { 'chat-message-reply': isUser })}>
-					{i.message}
-				</div>
+	  <div className='chat-messages' {...props}>
+		{isUser
+		  ? messages.map((i) => (
+			  <div
+				key={i.id}
+				className={classNames('chat-message', { 'chat-message-reply': isUser })}>
+				{i.message}
+			  </div>
+			))
+		  : messages.slice(0, currentMessageIndex).map((i) => (
+			  <div
+				key={i.id}
+				className={classNames('chat-message', { 'chat-message-reply': isUser })}>
+				{i.message}
+			  </div>
 			))}
-		</div>
+		{!isUser && isNewConversation && messages[currentMessageIndex] && (
+		  <div
+			key={messages[currentMessageIndex].id}
+			className={classNames('chat-message', { 'chat-message-reply': isUser })}>
+			{currentMessageText}
+		  </div>
+		)}
+	  </div>
 	);
-};
+  };
+  
 ChatMessages.propTypes = {
 	// @ts-ignore
 	messages: PropTypes.arrayOf(
@@ -236,7 +333,7 @@ ChatMessages.defaultProps = {
 interface IChatGroupProps extends HTMLAttributes<HTMLDivElement> {
 	isUser?:boolean;
 	timestamp?:string;
-	
+	isNewConversation?: boolean; 
 	messages: {
 		id?: string | number;
 		message?: string | number;
@@ -251,30 +348,32 @@ interface IChatGroupProps extends HTMLAttributes<HTMLDivElement> {
 		color?: TColor | 'link' | 'brand' | 'brand-two' | 'storybook';
 	};
 }
-export const ChatGroup: FC<IChatGroupProps> = ({
-	messages,
-	isUser,
-	color,
-	user,
-	...props
-}) => {
-	const imageSrc = user?.src || holderimage;
+export const ChatGroup = React.forwardRef<HTMLDivElement, IChatGroupProps>(({
+    messages,
+    isUser,
+    color,
+    user,
+    isNewConversation,
+    ...props
+}, ref) => {
+    const imageSrc = user?.src || holderimage;
 
-	const AVATAR = (
-		<ChatAvatar
-		src={imageSrc}
-			srcSet={imageSrc}
-		/>
-	);
-	return (
-		// eslint-disable-next-line react/jsx-props-no-spreading
-		<div className={classNames('chat-group', { 'chat-group-reply': isUser })} {...props}>
-			{!isUser && user && AVATAR}
-			<ChatMessages messages={messages} isUser={isUser} />
-			{isUser && user &&  AVATAR}
-		</div>
-	);
-};
+    const AVATAR = (
+        <ChatAvatar
+            src={imageSrc}
+            srcSet={imageSrc}
+        />
+    );
+
+    return (
+        <div ref={ref} className={classNames('chat-group', { 'chat-group-reply': isUser })} {...props}>
+            {!isUser && user && AVATAR}
+            <ChatMessages messages={messages} isUser={isUser} isNewConversation={isNewConversation} />
+            {isUser && user && AVATAR}
+        </div>
+    );
+});
+
 ChatGroup.propTypes = {
 	isUser: PropTypes.bool,
 	// @ts-ignore

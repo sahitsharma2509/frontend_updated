@@ -36,6 +36,7 @@ const Item: FC<IItemProps> = ({ id, image, title, description, tags, color }) =>
 			onClick={handleOnClick}
 			data-tour={title}>
 			<CardBody>
+				{/* 
 				<div
 					className={classNames(
 						'ratio ratio-1x1',
@@ -43,15 +44,18 @@ const Item: FC<IItemProps> = ({ id, image, title, description, tags, color }) =>
 						`bg-l${darkModeStatus ? 'o25' : '10'}-${color}`,
 						'mb-3',
 					)}>
-					<img
-						src={image}
-						alt=''
-						width='100%'
-						height='auto'
-						className='object-fit-contain p-3'
-					/>
+					
+        <img
+            src={image}
+            alt=''
+            width='100%'
+            height='auto'
+            className='object-fit-contain p-3'
+        />
+       
 					
 				</div>
+				 */}
 				<CardTitle>{title}</CardTitle>
 				<p className='text-muted truncate-line-2'>{description}</p>
 				<div className='row g-2'>
