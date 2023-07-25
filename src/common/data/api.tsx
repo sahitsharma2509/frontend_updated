@@ -1,6 +1,6 @@
 import axios from 'axios';
-
-const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL // Replace with your Django backend URL
+import Cookies from 'js-cookie';
+const BASE_URL = process.env.NEXT_PUBLIC_DJANGO_BASE_URL// Replace with your Django backend URL
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem("access_token");
@@ -9,16 +9,13 @@ const getAuthHeaders = () => {
     };
   };
 
-  export const fetchConversations = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/chat/`, {
-        headers: getAuthHeaders(),
-      });
-      return response.data;
-      
-    } catch (error) {
-      console.error('Error fetching conversations:', error);
-    }
+ export const fetchConversations = async ({ pageParam = 1 }) => {
+    const response = await axios.get(`${BASE_URL}/chat/?page=${pageParam}`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    });
+    return response.data;
   };
   
   export const fetchMessagesByConversationId = async (conversationId: number) => {
@@ -35,13 +32,57 @@ const getAuthHeaders = () => {
   };
   
 
-  export const fetchPdfDocuments = async () => {
-    try {
-      const response = await axios.get(`${BASE_URL}/pdf/`, {
-        headers: getAuthHeaders(),
+
+  // Inside your component...
+  export const fetchKnowledgebases = async () => {
+      const response = await axios.get(`${BASE_URL}/knowledgebases/`, {
+          headers: {
+              'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+          },
       });
       return response.data;
-    } catch (error) {
-      console.error('Error fetching PDF documents:', error);
-    }
   };
+
+
+  export async function getKnowledgeBases() {
+    const response = await fetch(`${BASE_URL}/get_knowledgebases/`, {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+      },
+    });
+  
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+  
+    const data = await response.json();
+    return data;
+  }
+
+
+  // api.js
+
+
+
+export async function createKnowledgeBase(formData: FormData) {
+  const csrftoken = Cookies.get("csrftoken") || '';
+  const response = await axios.post(`${BASE_URL}/create_knowledgebase/`, formData, {
+    headers: {
+      'X-CSRFToken': csrftoken,
+      'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+    },
+  });
+  return response.data;
+}
+
+export async function deleteKnowledgeBase(id: string) {
+  const csrftoken = Cookies.get("csrftoken") || '';
+  const response = await axios.delete(`${BASE_URL}/delete_knowledgebase/${id}/`, {
+    headers: {
+      'X-CSRFToken': csrftoken,
+      'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+    },
+  });
+  return response.data;
+}
+

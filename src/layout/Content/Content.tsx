@@ -1,9 +1,11 @@
-import React, { Suspense } from 'react';
+import React from 'react';
 import Card, { CardBody } from '../../components/bootstrap/Card';
 import PageWrapper from '../PageWrapper/PageWrapper';
 import Page from '../Page/Page';
 import SubHeader from '../SubHeader/SubHeader';
-import ContentRoutes from './ContentRoutes';
+import dynamic from 'next/dynamic';
+import { useState , useEffect} from 'react';
+import ClientSideComponent from '../../components/ClientSideComponent';
 
 const LOADING = (
 	<PageWrapper>
@@ -37,13 +39,22 @@ const LOADING = (
 );
 
 const Content = () => {
+	const [isClient, setIsClient] = useState(false);
+
+	// This effect will run after component mount, setting isClient to true
+	useEffect(() => {
+	  setIsClient(true);
+	}, []);
+  
 	return (
 		<main className='content'>
-			<Suspense fallback={LOADING}>
-				<ContentRoutes />
-			</Suspense>
+			<ClientSideComponent>
+				{/* nothing here, just empty */}
+			</ClientSideComponent>
+			{!isClient && LOADING}
 		</main>
 	);
+	
 };
 
 export default Content;

@@ -1,0 +1,14 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "targets": {
+          "node": "current"
+        }
+      }
+    ],
+    "next/babel"
+  ],
+  "ignore": ["node_modules/(?!(@omtanke/react-use-event-outside))/"]
+}

@@ -1,7 +1,7 @@
 import React, { FC, ReactNode, useState } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { NavLink } from 'react-router-dom';
+import Link from 'next/link';
 import TagWrapper from '../TagWrapper';
 import Icon from '../icon/Icon';
 import { TColor } from '../../type/color-type';
@@ -40,10 +40,9 @@ export const AlertLink: FC<IAlertLinkProps> = ({ className, children, href, to, 
 	const LINK_CLASSES = classNames('alert-link', className);
 	if (to) {
 		return (
-			// eslint-disable-next-line react/jsx-props-no-spreading
-			<NavLink to={to} className={LINK_CLASSES} {...props}>
+			<Link href={to} className={LINK_CLASSES} {...props}>
 				{children}
-			</NavLink>
+			</Link>
 		);
 	}
 	return (

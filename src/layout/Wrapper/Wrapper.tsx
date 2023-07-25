@@ -3,9 +3,10 @@ import classNames from 'classnames';
 import PropTypes from 'prop-types';
 import Content from '../Content/Content';
 import WrapperOverlay from './WrapperOverlay';
-import HeaderRoutes from '../Header/HeaderRoutes';
 import FooterRoutes from '../Footer/FooterRoutes';
 import ThemeContext from '../../contexts/themeContext';
+import DefaultAside from '../../pages/_layout/_asides/DefaultAside';
+import DefaultHeader from '../../pages/_layout/_headers/DefaultHeader';
 
 interface IWrapperContainerProps {
 	children: ReactNode;
@@ -38,9 +39,9 @@ const Wrapper = () => {
 	return (
 		<>
 			<WrapperContainer>
-				<HeaderRoutes />
+				<DefaultHeader />
 				<Content />
-				<FooterRoutes />
+				
 			</WrapperContainer>
 			<WrapperOverlay />
 		</>

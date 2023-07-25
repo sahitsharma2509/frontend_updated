@@ -6,6 +6,7 @@ import { IPageProps } from '../Page/Page';
 import { useNavigate } from 'react-router-dom';
 import AuthContext from '../../contexts/authContext';
 import { demoPagesMenu } from '../../menu';
+import { useRouter } from "next/router";
 
 interface IPageWrapperProps {
 	isProtected?: boolean;
@@ -19,23 +20,27 @@ interface IPageWrapperProps {
 }
 const PageWrapper = forwardRef<HTMLDivElement, IPageWrapperProps>(
 	({ isProtected, title, description, className, children }, ref) => {
-		useLayoutEffect(() => {
-			// @ts-ignore
-			document.getElementsByTagName('TITLE')[0].text = `${title ? `${title} | ` : ''}${
-				process.env.REACT_APP_SITE_NAME
-			}`;
-			// @ts-ignore
-			document
-				?.querySelector('meta[name="description"]')
-				.setAttribute('content', description || process.env.REACT_APP_META_DESC || '');
-		});
+		useEffect(() => {
+			const titleElement = document.getElementsByTagName('TITLE')[0] as HTMLTitleElement;
+			if (titleElement) {
+			  titleElement.text = `${title ? `${title} | ` : ''}${process.env.NEXT_PUBLIC_SITE_NAME}`;
+			}
+		
+			const metaElement = document.querySelector('meta[name="description"]') as HTMLMetaElement;
+			if (metaElement) {
+			  metaElement.setAttribute('content', description || process.env.REACT_APP_META_DESC || '');
+			}
+		}, [title, description]);
+		
+		  
+		  
 
 		const { user } = useContext(AuthContext);
 
-		const navigate = useNavigate();
+		const router = useRouter();
 		useEffect(() => {
 			if (isProtected && user === '') {
-				navigate(`../${demoPagesMenu.login.path}`);
+				router.push(`../${demoPagesMenu.login.path}`);
 			}
 			return () => {};
 			// eslint-disable-next-line react-hooks/exhaustive-deps

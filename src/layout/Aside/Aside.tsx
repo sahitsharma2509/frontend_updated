@@ -34,7 +34,7 @@ const Aside: FC<IAsideProps> = ({ children }) => {
 
 	const { asideStyle, touchStatus, hasTouchButton, asideWidthWithSpace, x } = useAsideTouch();
 
-	const isModernDesign = process.env.REACT_APP_MODERN_DESGIN === 'true';
+	const isModernDesign = process.env.NEXT_PUBLIC_MODERN_DESGIN === 'true';
 
 	const constraintsRef = useRef(null);
 

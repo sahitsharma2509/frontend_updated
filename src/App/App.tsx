@@ -10,7 +10,7 @@ import { Toast, ToastContainer } from '../components/bootstrap/Toasts';
 import useDarkMode from '../hooks/useDarkMode';
 import COLORS from '../common/data/enumColors';
 import { getOS } from '../helpers/helpers';
-import AsideRoutes from '../layout/Aside/AsideRoutes';
+import useClientSideLayoutEffect from '../hooks/useClientSideLayoutEffect';
 import axios from 'axios';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -21,7 +21,7 @@ import useVerifyAuth from '../pages/presentation/auth/userVerify';
 import {api,refreshAccessToken } from '../apiHelper'
 
 const App = () => {
-	const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
+	const BASE_URL = process.env.NEXT_PUBLIC_DJANGO_BASE_URL
 	getOS();
 	useVerifyAuth()
 	
@@ -66,8 +66,8 @@ const App = () => {
 	/**
 	 * Modern Design
 	 */
-	useLayoutEffect(() => {
-		if (process.env.REACT_APP_MODERN_DESGIN === 'true') {
+	useClientSideLayoutEffect(() => {
+		if (process.env.NEXT_PUBLIC_MODERN_DESGIN === 'true') {
 			document.body.classList.add('modern-design');
 		} else {
 			document.body.classList.remove('modern-design');
@@ -76,6 +76,7 @@ const App = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<ToastProvider components={{ ToastContainer, Toast }}>
+			<AuthContextProvider>
 
 
 					<div
@@ -86,13 +87,13 @@ const App = () => {
 							zIndex: fullScreenStatus ? 1 : undefined,
 							overflow: fullScreenStatus ? 'scroll' : undefined,
 						}}>
-						<AsideRoutes />
+					
 						<Wrapper />
 					</div>
 					<Portal id='portal-notification'>
 						<ReactNotifications />
 					</Portal>
-
+					</AuthContextProvider>
 			</ToastProvider>
 		</ThemeProvider>
 	);

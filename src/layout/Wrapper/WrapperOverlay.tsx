@@ -7,7 +7,7 @@ const WrapperOverlay = () => {
 	const { asideStatus, setAsideStatus, setLeftMenuStatus, setRightMenuStatus } =
 		useContext(ThemeContext);
 
-	if (asideStatus && width < Number(process.env.REACT_APP_MOBILE_BREAKPOINT_SIZE))
+	if (asideStatus && width < Number(process.env.NEXT_PUBLIC_MOBILE_BREAKPOINT_SIZE))
 		return (
 			<div
 				role='presentation'

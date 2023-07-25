@@ -2,12 +2,13 @@ import React from 'react';
 import classNames from 'classnames';
 import useDarkMode from '../../../hooks/useDarkMode';
 import Footer from '../../../layout/Footer/Footer';
+import footers from '../../../routes/footerRoutes';
 
 const DefaultFooter = () => {
 	const { darkModeStatus } = useDarkMode();
 
 	return (
-		<Footer>
+		<Footer >
 			<div className='container-fluid'>
 				<div className='row'>
 					<div className='col'>

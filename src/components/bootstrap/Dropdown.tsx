@@ -15,7 +15,9 @@ import PropTypes from 'prop-types';
 import { Manager, Popper, Reference } from 'react-popper';
 import classNames from 'classnames';
 // @ts-ignore
-import useEventOutside from '@omtanke/react-use-event-outside';
+require('@babel/register');
+import useEventOutside from "@omtanke/react-use-event-outside";
+
 import useDarkMode from '../../hooks/useDarkMode';
 import { IButtonProps } from './Button';
 import { TDropdownDirection } from '../../type/dropdown-type';

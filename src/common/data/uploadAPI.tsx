@@ -1,31 +1,18 @@
 import axios from 'axios'
 
-const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
+const BASE_URL = process.env.NEXT_PUBLIC_DJANGO_BASE_URL
 
 
 const API_URL = `${BASE_URL}/api`;
-const getAuthHeaders = () => {
-    const token = localStorage.getItem("access_token");
-    return {
-        'Content-Type': 'multipart/form-data',
-      'Authorization': `Bearer ${token}`,
-    };
-  };
-  console.log("Auth",getAuthHeaders())
 
-export const uploadSinglePDF = async (data: FormData) => {
-  try {
-    const response = await axios.post(`${API_URL}/upload/single`, data, {
-      headers: getAuthHeaders()
-      
-    });
-    return response.data;
-  } catch (error) {
-    console.error(error);
-  }
-};
+
+
+
 const getYouTubeHeaders = () => {
-  const token = localStorage.getItem("access_token");
+  let token;
+  if (typeof window !== 'undefined') {
+      token = localStorage.getItem("access_token");
+  }
   return {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,

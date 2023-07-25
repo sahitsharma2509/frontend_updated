@@ -1,20 +1,17 @@
-import React, { FC, ReactNode } from 'react';
-import { useMeasure } from 'react-use';
-
+import { FC, ReactNode } from 'react';
+import Link from 'next/link';
 interface IFooterProps {
-	children: ReactNode;
+
+    children: ReactNode;
 }
-const Footer: FC<IFooterProps> = ({ children }) => {
-	const [ref, { height }] = useMeasure<HTMLDivElement>();
 
-	const root = document.documentElement;
-	root.style.setProperty('--footer-height', `${height}px`);
-
-	return (
-		<footer ref={ref} className='footer'>
-			{children}
-		</footer>
-	);
+const Footer: FC<IFooterProps> = ({  children }) => {
+    return (
+        <footer className='footer'>
+         
+            {children}
+        </footer>
+    );
 };
 
 export default Footer;

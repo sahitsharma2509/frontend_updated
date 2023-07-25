@@ -6,6 +6,7 @@ import React, {
 	useRef,
 	ReactElement,
 	HTMLAttributes,
+	useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
@@ -14,6 +15,7 @@ import Portal from '../../layout/Portal/Portal';
 import TagWrapper from '../TagWrapper';
 import useEventListener from '../../hooks/useEventListener';
 import { TModalFullScreen, TModalSize } from '../../type/modal-type';
+import useClientSideLayoutEffect from '../../hooks/useClientSideLayoutEffect';
 
 interface IModalTitleProps extends HTMLAttributes<HTMLElement> {
 	id: string;
@@ -166,14 +168,16 @@ const Modal: FC<IModalProps> = ({
 	const ref = useRef(null);
 
 	// <body> modal-open class (presentation)
-	useLayoutEffect(() => {
+	useEffect(() => {
 		if (isOpen) {
-			document.body.classList.add('modal-open');
+			console.log("Open")
+		  document.body.classList.add('modal-open');
 		}
 		return () => {
-			document.body.classList.remove('modal-open');
+		  document.body.classList.remove('modal-open');
 		};
-	});
+	  }, [isOpen]);
+	  console.log('Rendering Modal')
 
 	// Backdrop close function
 	const closeModal = (event: { target: any }) => {
@@ -286,7 +290,7 @@ Modal.propTypes = {
 	/**
 	 *  These sizes kick in at certain breakpoints to avoid horizontal scrollbars on narrower viewports.
 	 */
-	size: PropTypes.oneOf([null, 'sm', 'lg', 'xl']),
+	size: PropTypes.oneOf([null, 'sm','lg','md','xl']),
 	/**
 	 * Another override is the option to pop up a modal that covers the user viewport.
 	 */

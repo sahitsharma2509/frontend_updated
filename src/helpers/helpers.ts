@@ -3,44 +3,54 @@ export function test() {
 }
 
 export function getOS() {
-	const { userAgent } = window.navigator;
-	const { platform } = window.navigator;
-	const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'];
-	const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
-	const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
 	let os = null;
-
-	if (macosPlatforms.indexOf(platform) !== -1) {
+	
+	if (typeof window !== 'undefined') {
+	  const { userAgent } = window.navigator;
+	  const { platform } = window.navigator;
+	  const macosPlatforms = ['Macintosh', 'MacIntel', 'MacPPC', 'Mac68K'];
+	  const windowsPlatforms = ['Win32', 'Win64', 'Windows', 'WinCE'];
+	  const iosPlatforms = ['iPhone', 'iPad', 'iPod'];
+  
+	  if (macosPlatforms.indexOf(platform) !== -1) {
 		os = 'MacOS';
-	} else if (iosPlatforms.indexOf(platform) !== -1) {
+	  } else if (iosPlatforms.indexOf(platform) !== -1) {
 		os = 'iOS';
-	} else if (windowsPlatforms.indexOf(platform) !== -1) {
+	  } else if (windowsPlatforms.indexOf(platform) !== -1) {
 		os = 'Windows';
-	} else if (/Android/.test(userAgent)) {
+	  } else if (/Android/.test(userAgent)) {
 		os = 'Android';
-	} else if (!os && /Linux/.test(platform)) {
+	  } else if (!os && /Linux/.test(platform)) {
 		os = 'Linux';
+	  }
+  
+	  // @ts-ignore
+	  document.documentElement.setAttribute('os', os);
 	}
-
-	// @ts-ignore
-	document.documentElement.setAttribute('os', os);
+  
 	return os;
-}
-
-export const hasNotch = () => {
-	/**
-	 * For storybook test
-	 */
-	const storybook = window.location !== window.parent.location;
-	// @ts-ignore
-	const iPhone = /iPhone/.test(navigator.userAgent) && !window.MSStream;
-	const aspect = window.screen.width / window.screen.height;
-	const aspectFrame = window.innerWidth / window.innerHeight;
-	return (
+  }
+  
+  export const hasNotch = () => {
+	if (typeof window !== 'undefined') {
+	  /**
+	   * For storybook test
+	   */
+	  const storybook = window.location !== window.parent.location;
+	  // @ts-ignore
+	  const iPhone = /iPhone/.test(navigator.userAgent) && !window.MSStream;
+	  const aspect = window.screen.width / window.screen.height;
+	  const aspectFrame = window.innerWidth / window.innerHeight;
+	  return (
 		(iPhone && aspect.toFixed(3) === '0.462') ||
 		(storybook && aspectFrame.toFixed(3) === '0.462')
-	);
-};
+	  );
+	} else {
+	  // You might need to provide a default return value here.
+	  // This will be the value used during server-side rendering.
+	  return false;
+	}
+  };
 
 export const mergeRefs = (refs: any[]) => {
 	return (value: any) => {
@@ -96,3 +106,11 @@ export const debounce = (func: (arg0: any) => void, wait = 1000) => {
 		timeout = setTimeout(later, wait);
 	};
 };
+
+export const getAccessToken = () => {
+	if (typeof window !== 'undefined') {
+	  return localStorage.getItem('access_token');
+	}
+	return null;
+  };
+  

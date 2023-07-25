@@ -2,7 +2,7 @@ import React, { FC, ReactNode, useLayoutEffect } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { useMeasure } from 'react-use';
-
+import useClientSideLayoutEffect from '../../hooks/useClientSideLayoutEffect';
 interface ISubHeaderLeftProps {
 	children: ReactNode;
 	className?: string;
@@ -55,10 +55,13 @@ export interface ISubHeaderProps {
 const SubHeader: FC<ISubHeaderProps> = ({ children, className }) => {
 	const [ref, { height }] = useMeasure<HTMLDivElement>();
 
-	const root = document.documentElement;
-	root.style.setProperty('--subheader-height', `${height}px`);
+	const root = typeof document !== 'undefined' ? document.documentElement : null;
+if(root){
+    root.style.setProperty('--subheader-height', `${height}px`);
+}
 
-	useLayoutEffect(() => {
+
+useClientSideLayoutEffect(() => {
 		document.body.classList.add('subheader-enabled');
 		return () => {
 			document.body.classList.remove('subheader-enabled');

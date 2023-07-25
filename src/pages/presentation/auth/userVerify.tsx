@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { api, refreshAccessToken } from '../../../apiHelper';
 
 const useVerifyAuth = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const navigate = useNavigate();
+    const router = useRouter();
   
     useEffect(() => {
       const verifyAuth = async () => {
@@ -21,6 +21,7 @@ const useVerifyAuth = () => {
               setIsAuthenticated(true);
             } else {
               setIsAuthenticated(false);
+              router.push('/login'); // navigate to the login page when user is not authenticated
             }
           } catch (error) {
             console.error('Error fetching user data:', error);
@@ -34,7 +35,7 @@ const useVerifyAuth = () => {
       };
   
       verifyAuth();
-    }, [navigate]);
+    }, [router]);
   
     return { isAuthenticated, isLoading };
   };

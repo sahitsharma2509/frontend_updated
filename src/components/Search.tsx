@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import Icon from './icon/Icon';
 import Input from './bootstrap/forms/Input';
@@ -8,7 +8,7 @@ import Modal, { ModalBody, ModalHeader } from './bootstrap/Modal';
 
 const Search = () => {
 	const refSearchInput = useRef<HTMLInputElement>(null);
-	const navigate = useNavigate();
+	const router = useRouter();
 	const [searchModalStatus, setSearchModalStatus] = useState(false);
 	const formik = useFormik({
 		initialValues: {
@@ -97,33 +97,33 @@ const Search = () => {
 							</tr>
 						</thead>
 						<tbody>
-							{filterResult.length ? (
-								filterResult.map((item) => (
-									<tr
-										key={item.id}
-										className='cursor-pointer'
-										onClick={() => {
-											navigate(`../${item.path}`);
-										}}>
-										<td>
-											{item.icon && (
-												<Icon
-													icon={item.icon}
-													size='lg'
-													className='me-2'
-													color='primary'
-												/>
-											)}
-											{item.text}
-										</td>
-									</tr>
-								))
-							) : (
-								<tr className='table-active'>
-									<td>No result found for query "{formik.values.searchInput}"</td>
-								</tr>
-							)}
-						</tbody>
+		{filterResult.length ? (
+			filterResult.map((item) => (
+				<tr
+					key={item.id}
+					className='cursor-pointer'
+					onClick={() => {
+						router.push(`../${item.path}`);
+					}}>
+					<td>
+						{item.icon && (
+							<Icon
+								icon={item.icon}
+								size='lg'
+								className='me-2'
+								color='primary'
+							/>
+						)}
+						{item.text}
+					</td>
+				</tr>
+			))
+		) : (
+			<tr className='table-active'>
+				<td>No result found for query "{formik.values.searchInput}"</td>
+			</tr>
+		)}
+	</tbody>
 					</table>
 				</ModalBody>
 			</Modal>

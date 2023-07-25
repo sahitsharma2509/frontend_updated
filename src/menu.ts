@@ -33,7 +33,7 @@ export const demoPagesMenu = {
 			item: {
 				id: 'item',
 				text: 'Item',
-				path: 'knowledge/item/1',
+				path: 'knowledge/item',
 				icon: 'Book',
 			},
 		},
@@ -59,7 +59,7 @@ export const demoPagesMenu = {
 			test3: {
 				id: 'withListYT',
 				text: 'Chat with Docs',
-				path: 'chat/test3',
+				path: 'chat/private',
 				icon: 'Quickreply',
 			},
 

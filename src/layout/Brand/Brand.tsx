@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import Icon from '../../components/icon/Icon';
 import Logo from '../../components/Logo';
 
@@ -13,7 +13,7 @@ const Brand: FC<IBrandProps> = ({ asideStatus, setAsideStatus }) => {
 		<div className='brand'>
 			<div className='brand-logo'>
 				<h1 className='brand-title '>
-					<Link to='/' aria-label='Logo'>
+					<Link href='/' aria-label='Logo'>
 						<Logo height={32} />
 					</Link>
 				</h1>
@@ -29,6 +29,7 @@ const Brand: FC<IBrandProps> = ({ asideStatus, setAsideStatus }) => {
 		</div>
 	);
 };
+
 Brand.propTypes = {
 	asideStatus: PropTypes.bool.isRequired,
 	setAsideStatus: PropTypes.func.isRequired,

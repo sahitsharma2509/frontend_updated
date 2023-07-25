@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useState } from 'react';
+import React, { ReactNode, useContext, useState,useEffect } from 'react';
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
 import Brand from '../../../layout/Brand/Brand';
@@ -18,9 +18,14 @@ import Aside, { AsideBody, AsideHead } from '../../../layout/Aside/Aside';
 const DefaultAside = () => {
 	const { asideStatus, setAsideStatus } = useContext(ThemeContext);
 
-	const [doc, setDoc] = useState(
-		localStorage.getItem('facit_asideDocStatus') === 'true' || false,
-	);
+	const [doc, setDoc] = useState(false);
+
+	useEffect(() => {
+		if (typeof window !== 'undefined') {
+		  setDoc(localStorage.getItem('facit_asideDocStatus') === 'true');
+		}
+	  }, []);
+	  
 
 	const { t } = useTranslation(['translation', 'menu']);
 

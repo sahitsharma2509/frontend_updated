@@ -13,6 +13,8 @@ export interface IMessages {
     created_at: string;
     user: IUserProps
     isLastMessage?: boolean;
+    isFile?:boolean;
+    fileName?:string;
 }
 
 

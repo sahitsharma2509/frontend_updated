@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useContext, useLayoutEffect, useState } from 'react';
+import React, { FC, ReactNode, useContext, useLayoutEffect, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 import { useTour } from '@reactour/tour';
@@ -8,6 +8,7 @@ import Icon from '../../../components/icon/Icon';
 import ThemeContext from '../../../contexts/themeContext';
 import useDarkMode from '../../../hooks/useDarkMode';
 import Popovers from '../../../components/bootstrap/Popovers';
+import useClientSideLayoutEffect from '../../../hooks/useClientSideLayoutEffect';
 
 interface ICommonHeaderRightProps {
 	beforeChildren?: ReactNode;
@@ -28,12 +29,16 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 
 	const { i18n } = useTranslation();
 
+	useEffect(() => {
+		console.log(`Dark mode is now ${darkModeStatus ? "enabled" : "disabled"}`);
+	  }, [darkModeStatus]);
+
 
 
 	/**
 	 * Language attribute
 	 */
-	useLayoutEffect(() => {
+	useClientSideLayoutEffect(() => {
 		document.documentElement.setAttribute('lang', i18n.language.substring(0, 2));
 	});
 
@@ -44,7 +49,6 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 			<div className='row g-3'>
 				{beforeChildren}
 				{/* Tour Modal */}
-				
 
 				{/* Dark Mode */}
 				<div className='col-auto'>
@@ -52,7 +56,10 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 						<Button
 							// eslint-disable-next-line react/jsx-props-no-spreading
 							{...styledBtn}
-							onClick={() => setDarkModeStatus(!darkModeStatus)}
+							onClick={() => {
+								console.log("Button clicked");
+								setDarkModeStatus(!darkModeStatus);
+							  }}
 							className='btn-only-icon'
 							data-tour='dark-mode'>
 							<Icon
@@ -77,14 +84,11 @@ const CommonHeaderRight: FC<ICommonHeaderRightProps> = ({ beforeChildren, afterC
 					</Popovers>
 				</div>
 
-	
 				{/* Quick Panel */}
 				
 				{/*	Notifications */}
 				{afterChildren}
 			</div>
-
-
 		</HeaderRight>
 	);
 };

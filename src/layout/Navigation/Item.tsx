@@ -1,9 +1,9 @@
-import React, { FC, memo, ReactNode, useCallback, useContext, useRef, useState } from 'react';
+import React, { FC, memo, ReactNode, useCallback, useContext, useRef, useState,useEffect, RefObject } from 'react';
 import { TIcons } from '../../type/icons-type';
 import useDarkMode from '../../hooks/useDarkMode';
 import { useWindowSize } from 'react-use';
 import ThemeContext from '../../contexts/themeContext';
-import { NavLink, useLocation } from 'react-router-dom';
+
 import { useTranslation } from 'react-i18next';
 import classNames from 'classnames';
 import Icon from '../../components/icon/Icon';
@@ -13,7 +13,31 @@ import Collapse from '../../components/bootstrap/Collapse';
 import PropTypes from 'prop-types';
 import { List } from './Navigation';
 // @ts-ignore
-import useEventOutside from '@omtanke/react-use-event-outside';
+
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+
+import dynamic from 'next/dynamic';
+
+require('@babel/register');
+import useOnClickOutside from '../../hooks/useOnClickOutside';
+
+
+interface ClientSideComponentProps {
+	children: ReactNode;
+  }
+  
+  const ClientSideComponent: React.FC<ClientSideComponentProps> = ({ children }) => {
+	  const [isMounted, setIsMounted] = useState(false);
+  
+	  useEffect(() => {
+		  setIsMounted(true);
+	  }, []);
+  
+	  return isMounted ? children : null;
+  };
+
+
 
 interface IItemProps {
 	children?: ReactNode;
@@ -47,6 +71,13 @@ const Item: FC<IItemProps> = ({
 	const { darkModeStatus } = useDarkMode();
 	const { width } = useWindowSize();
 	const { setAsideStatus, setLeftMenuStatus, setRightMenuStatus } = useContext(ThemeContext);
+	const router = useRouter();
+	const [isMounted, setIsMounted] = useState(false);
+
+	useEffect(() => {
+		// This code runs after the first render on the client, so we can safely access `window` here.
+		setIsMounted(true);
+	}, []); // Empty dependency array means this effect runs once on mount and never again.
 
 	// eslint-disable-next-line react/prop-types
 	const ACTIVE = props.activeItem === id;
@@ -58,20 +89,22 @@ const Item: FC<IItemProps> = ({
 		}
 	};
 
+	
+
 	const linkHandleClick = () => {
 		// For Mobile Design
-		if (width < Number(process.env.REACT_APP_MOBILE_BREAKPOINT_SIZE)) setAsideStatus(false);
+		if (width < Number(process.env.NEXT_PUBLIC_MOBILE_BREAKPOINT_SIZE)) setAsideStatus(false);
 		setLeftMenuStatus(false);
 		setRightMenuStatus(false);
 	};
 
 	const ANCHOR_LINK_PATTERN = /^#/i;
-	const location = useLocation();
+
 
 	// For aside menu
-	const here = typeof to === 'string' && to !== '/' && location.pathname.includes(to);
-	// For top menu
-	const match = to !== '/' && location.pathname === to;
+const here = typeof to === 'string' && to !== '/' && router.pathname.includes(to);
+// For top menu
+const match = to !== '/' && router.pathname === to;
 
 	const { t } = useTranslation('menu');
 
@@ -107,23 +140,26 @@ const Item: FC<IItemProps> = ({
 		</>
 	);
 
+	
+	
 	const WITHOUT_CHILD =
-		!children &&
-		!hide &&
-		((typeof to === 'string' && ANCHOR_LINK_PATTERN.test(to) && (
-			<NavHashLink className={LINK_CLASS} to={to} onClick={linkHandleClick}>
-				{INNER}
-			</NavHashLink>
-		)) || (
-			<NavLink
-				end
-				// @ts-ignore
-				className={classNames(LINK_CLASS, ({ isActive }) => (isActive ? 'active' : ''))}
-				to={`../${to}`}
-				onClick={linkHandleClick}>
-				{INNER}
-			</NavLink>
-		));
+    !children &&
+    !hide &&
+    ((typeof to === 'string' && ANCHOR_LINK_PATTERN.test(to) && (
+        // You need to decide how to handle hash links in Next.js
+        <a href={to} className={LINK_CLASS} onClick={linkHandleClick}>
+            {INNER}
+        </a>
+    )) || (
+		<Link 
+		href={`/${to}`} 
+		className={classNames(LINK_CLASS, router.asPath === `/${to}` ? 'active' : '')}
+		onClick={linkHandleClick}
+	>
+		{INNER}
+	</Link>
+
+    ));
 
 	// Dropdown
 	const dropdownRef = useRef(null);
@@ -150,8 +186,12 @@ const Item: FC<IItemProps> = ({
 	const closeMenu = useCallback(() => {
 		setDropdownStatus(false);
 	}, []);
-	useEventOutside(dropdownRef, 'mousedown', closeMenu);
-	useEventOutside(dropdownRef, 'touchstart', closeMenu);
+	// Moved the hooks to the top level
+	useOnClickOutside(dropdownRef, closeMenu);
+	
+
+// Rest of your component
+
 
 	if (children) {
 		// submenu && in header
@@ -250,7 +290,13 @@ const Item: FC<IItemProps> = ({
 		);
 	}
 	// without submenu
-	return <li className='navigation-item'>{WITHOUT_CHILD}</li>;
+	return (
+		<li className='navigation-item'>
+			<ClientSideComponent>
+				{WITHOUT_CHILD}
+			</ClientSideComponent>
+		</li>
+	);
 };
 Item.propTypes = {
 	children: PropTypes.node,

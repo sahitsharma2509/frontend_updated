@@ -8,7 +8,8 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { NavLink } from 'react-router-dom';
+
+import Link from 'next/link';
 import TagWrapper from '../TagWrapper';
 import Icon from '../icon/Icon';
 
@@ -32,23 +33,23 @@ export const BreadcrumbItem: FC<IBreadcrumbItemProps> = ({
 }) => {
 	return (
 		<TagWrapper
-			tag={tag}
-			className={classNames('breadcrumb-item', { active: isActive }, className)}
-			aria-current={isActive ? 'page' : null}
-			aria-label={ariaLabel || children}>
-			{divider &&
-				typeof divider !== 'string' &&
-				cloneElement(divider, {
-					className: classNames('breadcrumb-icon', divider.props.className),
-				})}
-			{isActive ? (
-				children
-			) : (
-				<NavLink to={to} aria-label={ariaLabel}>
-					{children}
-				</NavLink>
-			)}
-		</TagWrapper>
+	tag={tag}
+	className={classNames('breadcrumb-item', { active: isActive }, className)}
+	aria-current={isActive ? 'page' : null}
+	aria-label={ariaLabel || children}>
+	{divider &&
+		typeof divider !== 'string' &&
+		cloneElement(divider, {
+			className: classNames('breadcrumb-icon', divider.props.className),
+		})}
+	{isActive ? (
+		children
+	) : (
+		<Link href={to} aria-label={ariaLabel}>
+    {children}
+</Link>
+	)}
+</TagWrapper>
 	);
 };
 BreadcrumbItem.propTypes = {

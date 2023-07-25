@@ -4,69 +4,58 @@ import ThemeContext from '../contexts/themeContext';
 import useDeviceScreen from './useDeviceScreen';
 
 const useAsideTouch = () => {
-	const { asideStatus } = useContext(ThemeContext);
-	const deviceScreen = useDeviceScreen();
+  const { asideStatus } = useContext(ThemeContext);
+  const deviceScreen = useDeviceScreen();
+  
+  const [touchStatus, setTouchStatus] = useState(true);
+  const [hasTouchButton, setHasTouchButton] = useState(false);
+  const [mobileDesign, setMobileDesign] = useState(false);
+  const [asideWidthWithSpace, setAsideWidthWithSpace] = useState(0);
+  const x = useMotionValue(0);
 
-	const mobileDesign =
-		typeof deviceScreen?.width !== 'undefined' &&
-		deviceScreen?.width <= Number(process.env.REACT_APP_MOBILE_BREAKPOINT_SIZE);
-	const hasTouchButton =
-		typeof deviceScreen?.width !== 'undefined' &&
-		deviceScreen?.width > Number(process.env.REACT_APP_ASIDE_MINIMIZE_BREAKPOINT_SIZE);
+  // X value get
+  useEffect(() => {
+    const unsubscribeX = x.onChange(value => setTouchStatus(!value));
+    return () => {
+      unsubscribeX();
+    };
+  }, [x]);
 
-	const asideWidthWithSpace =
-		(parseInt(String(process.env.REACT_APP_ASIDE_WIDTH_PX), 10) +
-			parseInt(String(process.env.REACT_APP_SPACER_PX), 10)) *
-		-1;
+  // Calculate values after component mount
+  useEffect(() => {
+    if (deviceScreen?.width) {
+      setMobileDesign(deviceScreen?.width <= Number(process.env.NEXT_PUBLIC_MOBILE_BREAKPOINT_SIZE || '0'));
+      setHasTouchButton(deviceScreen?.width > Number(process.env.NEXT_PUBLIC_MOBILE_BREAKPOINT_SIZE || '0'));
+    }
 
-	const x = useMotionValue(
-		process.env.REACT_APP_ASIDE_TOUCH_STATUS === 'true' ? 0 : asideWidthWithSpace,
-	);
-	const [touchStatus, setTouchStatus] = useState(!x.get());
-	const left = useTransform(
-		x,
-		[-100, -90, -10, 0],
-		[asideWidthWithSpace, asideWidthWithSpace, 0, 0],
-	);
+    const calculatedWidth =
+      (parseInt(process.env.NEXT_PUBLIC_ASIDE_WIDTH_PX || '0', 10) +
+      parseInt(process.env.NEXT_PUBLIC_SPACER_PX || '0', 10)) * -1;
+    setAsideWidthWithSpace(calculatedWidth);
 
-	// X value get
-	useEffect(() => {
-		function updateX() {
-			const X = x.get();
-			setTouchStatus(!X);
-		}
+    const initialX = process.env.NEXT_PUBLIC_ASIDE_TOUCH_STATUS === 'true' ? 0 : calculatedWidth;
+    x.set(initialX);
+    setTouchStatus(initialX !== 0);
 
-		// @ts-ignore
-		const unsubscribeX = x.onChange(updateX);
+    if (!asideStatus) {
+      x.set(0);
+      setTouchStatus(false);
+    }
 
-		return () => {
-			unsubscribeX();
-		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
+    if (!hasTouchButton) {
+      x.set(0);
+    }
+  }, [asideStatus, deviceScreen, hasTouchButton, x]);
 
-	// Set Aside & Touch Button value
-	useEffect(() => {
-		if (!hasTouchButton) {
-			x.set(0);
-		}
-		return () => {};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [hasTouchButton, deviceScreen.width]);
+  const left = useTransform(
+    x,
+    [-100, -90, -10, 0],
+    [asideWidthWithSpace, asideWidthWithSpace, 0, 0]
+  );
+  
+  const asideStyle = hasTouchButton ? { left } : { left: mobileDesign ? undefined : '0rem' };
 
-	//  for start minimize aside
-	useEffect(() => {
-		if (!asideStatus) {
-			x.set(0);
-			setTouchStatus(false);
-		}
-		return () => {};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [asideStatus]);
-
-	const asideStyle = hasTouchButton ? { left } : { left: mobileDesign ? undefined : '0rem' };
-
-	return { asideStyle, touchStatus, hasTouchButton, asideWidthWithSpace, x };
+  return { asideStyle, touchStatus, hasTouchButton, asideWidthWithSpace, x };
 };
 
 export default useAsideTouch;

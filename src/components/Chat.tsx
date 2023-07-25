@@ -4,58 +4,97 @@ import classNames from 'classnames';
 import Avatar from './Avatar';
 import useDarkMode from '../hooks/useDarkMode';
 import { TColor } from '../type/color-type';
-import holderimage from '../assets/img/holder.png'
-
-
-
+import holderimage from '../assets/img/holder.png';
+import Icon from './icon/Icon';
+import { CSSProperties } from 'react';
+import { animated } from 'react-spring';
+import copy from 'copy-to-clipboard';
+import Image from 'next/image';
+import axios from 'axios';
+import ReactMarkdown from 'react-markdown';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { atomDark} from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { useContext } from 'react';
+import AuthContext from '../contexts/authContext';
+import { FilePdfTwoTone,RobotOutlined } from '@ant-design/icons';
+import { Components } from 'react-markdown';
 
 interface IConversationListItemProps extends HTMLAttributes<HTMLDivElement> {
-	id: string;
-	className?: string;
-	isActive?: boolean;
-	title?: string;
+    id: string;
+    className?: string;
+    isActive?: boolean;
+    title?: string;
+    onDelete?: (id: string) => void;
+    style?: CSSProperties;
+	conversationTitle?: string | null;
 }
 
+
+
 export const ConversationListItem: FC<IConversationListItemProps> = ({
-	id,
-	className,
-	isActive,
-	title,
-	...props
+    id,
+    className,
+    isActive,
+    title,
+	conversationTitle,
+    onDelete,
+    style,  // new style prop
+    ...props
 }) => {
-	const { darkModeStatus } = useDarkMode();
+    const { darkModeStatus } = useDarkMode();
 
-	return (
-		<div className={classNames('col-12 cursor-pointer', className)} {...props}>
-			<div
-				className={classNames(
-					'd-flex align-items-center',
-					'p-3 rounded-2',
-					'transition-base',
-					{
-						'bg-l25-info-hover': !darkModeStatus,
-						'bg-lo50-info-hover': darkModeStatus,
-						'bg-l10-info': !darkModeStatus && isActive,
-						'bg-lo25-info': darkModeStatus && isActive,
-					},
-				)}
-			>
-				<div className='d-grid'>
-					<div className='d-flex flex-wrap d-xxl-block'>
-						<span className='fw-bold fs-5 me-3'>{`Conversation ID: ${id}`}</span>
-					</div>
-					<div className='text-muted text-truncate'>{title}</div>
-				</div>
-			</div>
-		</div>
-	);
+    const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+    const handleDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowConfirmDelete(true);
+    };
+
+    const handleConfirmDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onDelete) {
+            onDelete(id);
+        }
+    };
+
+    const handleCancelDeleteClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setShowConfirmDelete(false);
+    };
+
+    return (
+        <animated.div style={style} className={classNames('col-12 cursor-pointer', className)} {...props}>
+            <div
+                className={classNames(
+                    'd-flex align-items-center',
+                    'p-3 rounded-2',
+                    'transition-base',
+                    {
+                        'bg-l25-info-hover': !darkModeStatus,
+                        'bg-lo50-info-hover': darkModeStatus,
+                        'bg-l10-info': !darkModeStatus && isActive,
+                        'bg-lo25-info': darkModeStatus && isActive,
+                    },
+                )}
+            >
+                <div className='d-grid'>
+                    <div className='d-flex flex-wrap d-xxl-block justify-content-between'>
+                        <span className='fw-bold fs-6 me-2'>{conversationTitle}</span>
+                        {showConfirmDelete ? (
+                            <div>
+                                <Icon icon="Check" size="lg" onClick={handleConfirmDeleteClick} />
+                                <Icon icon="Clear" size="lg" onClick={handleCancelDeleteClick} />
+                            </div>
+                        ) : (
+                            isActive && <Icon icon="Delete" size="lg" onClick={handleDeleteClick} />
+                        )}
+                    </div>
+                    <div className='text-muted text-truncate'>{title}</div>
+                </div>
+            </div>
+        </animated.div>
+    );
 };
-
-
-
-
-
-
 
 
 
@@ -234,88 +273,255 @@ ChatListItem.defaultProps = {
 };
 
 interface IChatHeaderProps {
-	to: string;
-}
-export const ChatHeader: FC<IChatHeaderProps> = ({ to }) => {
+	conversation_title?: string;
+	knowledge_base?: string;
+  }
+  export const ChatHeader: FC<IChatHeaderProps> = ({ conversation_title, knowledge_base }) => {
 	return (
 		<>
-			<strong className='me-2'>To:</strong>
-			{to}
+		 <div className ='d-flex title-head '>
+
+			<RobotOutlined style={{ fontSize: '25px', color: '#08c' }} className='justify-content-start' />
+						<span className='text-muted' style={{ padding:'5px' }}>
+							Jarvis 
+
+						</span>
+
+
+					
+					  <figure className='text-center justify-content-center title-head'>
+	<blockquote className='blockquote'>
+	<p className='text-center'><strong>{conversation_title}</strong></p>
+	</blockquote>
+	<figcaption >
+	<p className='text-muted text-center'><small>{knowledge_base}</small></p>
+	</figcaption>
+</figure>
+</div>	
 		</>
 	);
 };
 ChatHeader.propTypes = {
-	to: PropTypes.string.isRequired,
-};
+	conversation_title: PropTypes.string,
+	knowledge_base: PropTypes.string
+  };
 
 interface IChatMessagesProps extends HTMLAttributes<HTMLDivElement> {
-	messages: {
-		id?: string | number;
-		message?: string | number;
-	}[];
-	isUser?: boolean;
-	isNewConversation?: boolean;
+    messages: {
+        id?: string | number;
+        message?: string;
+		isFile?: boolean;
+		fileName?: string;
+    }[];
+    isUser?: boolean;
+    isNewConversation?: boolean;
+	
 }
 
 export const ChatMessages: FC<IChatMessagesProps> = ({ messages, isUser, isNewConversation, ...props }) => {
-	const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-	const [currentMessageText, setCurrentMessageText] = useState('');
-  
-	const currentMessageTextRef = useRef('');
+    const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+    const [currentMessageText, setCurrentMessageText] = useState('');
+    const [copySuccess, setCopySuccess] = useState(false);
+    const [showIcons, setShowIcons] = useState(false);
+    const currentMessageTextRef = useRef('');
 
-useEffect(() => {
-  if (!isUser && messages[currentMessageIndex]) {
-    const message = String(messages[currentMessageIndex].message || '');
-    if (isNewConversation) {
-      const intervalId = setInterval(() => {
-        setCurrentMessageText((prevText) => {
-          const newMessageText = prevText + message.charAt(prevText.length);
-          currentMessageTextRef.current = newMessageText;
-          return newMessageText;
-        });
-        if (currentMessageTextRef.current === message) {
-          clearInterval(intervalId);
-          setCurrentMessageIndex((prevIndex) => prevIndex + 1);
-          setCurrentMessageText('');
+    useEffect(() => {
+        if (!isUser && messages[currentMessageIndex]) {
+            const message = messages[currentMessageIndex].message || '';
+            if (isNewConversation) {
+                const intervalId = setInterval(() => {
+                    setCurrentMessageText((prevText) => {
+                        const newMessageText = prevText + message.charAt(prevText.length);
+                        currentMessageTextRef.current = newMessageText;
+                        return newMessageText;
+                    });
+                    if (currentMessageTextRef.current === message) {
+						clearInterval(intervalId);
+						setCurrentMessageIndex((prevIndex) => prevIndex + 1);
+						setCurrentMessageText(message); // replace '' with message
+					  }
+					  
+                }, 15);
+                return () => clearInterval(intervalId);
+            } else {
+                setCurrentMessageText(message);
+                setCurrentMessageIndex((prevIndex) => prevIndex + 1);
+            }
         }
-      }, 15);
-      return () => clearInterval(intervalId);
-    } else {
-      setCurrentMessageText(message);
-      setCurrentMessageIndex((prevIndex) => prevIndex + 1);
-    }
-  }
-}, [messages, currentMessageIndex, isUser, isNewConversation]);
+    }, [messages, currentMessageIndex, isUser, isNewConversation]);
 
-  
-	return (
-	  <div className='chat-messages' {...props}>
-		{isUser
-		  ? messages.map((i) => (
-			  <div
-				key={i.id}
-				className={classNames('chat-message', { 'chat-message-reply': isUser })}>
-				{i.message}
-			  </div>
-			))
-		  : messages.slice(0, currentMessageIndex).map((i) => (
-			  <div
-				key={i.id}
-				className={classNames('chat-message', { 'chat-message-reply': isUser })}>
-				{i.message}
-			  </div>
-			))}
-		{!isUser && isNewConversation && messages[currentMessageIndex] && (
-		  <div
-			key={messages[currentMessageIndex].id}
-			className={classNames('chat-message', { 'chat-message-reply': isUser })}>
-			{currentMessageText}
-		  </div>
-		)}
-	  </div>
+    useEffect(() => {
+    let timeout: NodeJS.Timeout;
+    if (!isUser && messages[currentMessageIndex]) {
+        timeout = setTimeout(() => {
+            console.log('Setting showIcons to true');  // Add this line
+            setShowIcons(true);
+        }, 2000);
+    }
+    return () => {
+        if (timeout) clearTimeout(timeout);
+    };
+}, [messages, currentMessageIndex, isUser]);
+
+
+	useEffect(() => {
+		let timeoutId: NodeJS.Timeout | number | undefined;
+		if (copySuccess) {
+			timeoutId = setTimeout(() => {
+				setCopySuccess(false);
+			}, 2000); // Reset after 2 seconds
+		}
+		return () => {
+			if (timeoutId) {
+				clearTimeout(timeoutId as NodeJS.Timeout); // Need to cast it when using clearTimeout
+			}
+		};
+	}, [copySuccess]);
+
+	async function callTextToSpeechAPI(text: string | undefined) {
+		if (!text) {
+		  console.error('Cannot start Text-to-Speech: text is undefined.');
+		  return;
+		}
+		console.log(`Text: ${text}`);
+	  
+		try {
+		  const res = await axios.post('/api/textToSpeech', { text }, { responseType: 'arraybuffer' });
+		  const blob = new Blob([res.data], { type: 'audio/mpeg' });
+		  
+	  
+		  // Create audio element and play
+		  const audio = document.createElement('audio');
+		  audio.src = URL.createObjectURL(blob);
+		  audio.play();
+		} catch (error) {
+		  console.error('Error in Text-to-Speech API:', error);
+		}
+	  }
+
+
+	  const components: Components = {
+		code({node, inline, className, children, ...props}) {
+			const match = /language-(\w+)/.exec(className || '')
+			return !inline && match ? (
+				<SyntaxHighlighter 
+    style={atomDark as any} 
+    language={match[1]} 
+    PreTag="div" 
+    {...props}>
+    {String(children).replace(/\n$/, '')}
+</SyntaxHighlighter>
+
+			) : (
+				<code className={className} {...props}>
+					{children}
+				</code>
+			)
+		}
+	};
+	
+	  
+	
+
+	  return (
+		<div className='chat-messages' {...props}>
+			{isUser
+				? messages.map((i) => (
+					<div
+  key={i.id}
+  className={classNames('chat-message', { 'chat-message-reply': isUser })}
+>
+  {i.isFile && 
+    <div 
+      style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        color: '#fff',
+        padding: '5px', 
+        borderRadius: '5px',
+        marginBottom: '10px' // added a margin to separate the file info from the message
+      }}
+    >
+      <FilePdfTwoTone style={{ marginRight: '10px' }} />
+      <span>{i.fileName}</span>
+    </div>
+  }
+  {i.message && <ReactMarkdown className='msg'>{i.message}</ReactMarkdown>}
+</div>
+
+				))
+				: messages.slice(0, currentMessageIndex).map((i) => (
+					<div
+						key={i.id}
+						className={classNames('chat-message', { 'chat-message-reply': isUser })}
+					>
+						<ReactMarkdown className='msg' components={components}>{currentMessageText || ''}</ReactMarkdown>
+
+						{showIcons && (
+							<div className="icon-container">
+								{copySuccess ? (
+									<Icon icon="Check" className="icon-copy" size="lg" />
+								) : (
+									<>
+										<Icon
+											icon="ContentCopy"
+											onClick={() => {
+												if (i.message) {
+													copy(i.message);
+													setCopySuccess(true);
+												}
+											}}
+											className="icon-copy"
+										/>
+	
+										<Icon 
+											icon="Mic" 
+											className="icon-mic" 
+											size="lg" 
+											color="info" 
+											onClick={() => {
+												callTextToSpeechAPI(i.message);
+											}} 
+										/>
+									</>
+								)}
+							</div>
+						)}
+					</div>
+				))}
+			{!isUser && isNewConversation && messages[currentMessageIndex] && (
+				<div
+					key={messages[currentMessageIndex].id}
+					className={classNames('chat-message', { 'chat-message-reply': isUser })}
+				>
+					<ReactMarkdown className='msg' components={components}>{currentMessageText || ''}</ReactMarkdown>
+
+					{showIcons && (
+						<div className="icon-container">
+							{copySuccess ? (
+								<Icon icon="Check" className="icon-copy" size="lg" />
+							) : (
+								<>
+									<Icon
+										icon="ContentCopy"
+										onClick={() => {
+											copy(currentMessageText);
+											setCopySuccess(true);
+										}}
+										className="icon-copy"
+									/>
+									<Icon icon="Mic" className="icon-mic" size="lg" color="danger" />
+								</>
+							)}
+						</div>
+					)}
+				</div>
+			)}
+		</div>
 	);
-  };
-  
+};
+
+
 ChatMessages.propTypes = {
 	// @ts-ignore
 	messages: PropTypes.arrayOf(
@@ -336,9 +542,12 @@ interface IChatGroupProps extends HTMLAttributes<HTMLDivElement> {
 	isNewConversation?: boolean; 
 	messages: {
 		id?: string | number;
-		message?: string | number;
+		message?: string ;
+		isFile?: boolean;       // add this line
+        fileName?: string;      // add this line
 	}[];
 	color?: TColor | 'link' | 'brand' | 'brand-two' | 'storybook';
+	src?: string;
 	user: {
 		src?: string;
 		srcSet?: string;
@@ -356,7 +565,12 @@ export const ChatGroup = React.forwardRef<HTMLDivElement, IChatGroupProps>(({
     isNewConversation,
     ...props
 }, ref) => {
-    const imageSrc = user?.src || holderimage;
+    const { userProfileData } = useContext(AuthContext);
+
+    const userAvatar = userProfileData?.avatar;
+    const botAvatar = holderimage; // Replace with your actual bot avatar URL
+
+    const imageSrc = isUser ? userAvatar : botAvatar;
 
     const AVATAR = (
         <ChatAvatar
@@ -366,13 +580,14 @@ export const ChatGroup = React.forwardRef<HTMLDivElement, IChatGroupProps>(({
     );
 
     return (
-        <div ref={ref} className={classNames('chat-group', { 'chat-group-reply': isUser })} {...props}>
-            {!isUser && user && AVATAR}
-            <ChatMessages messages={messages} isUser={isUser} isNewConversation={isNewConversation} />
-            {isUser && user && AVATAR}
-        </div>
+     <div ref={ref} className={classNames('chat-group', { 'chat-group-reply': isUser })} {...props}>
+	{!isUser && user && AVATAR}
+	<ChatMessages messages={messages} isUser={isUser} isNewConversation={isNewConversation} />
+	{isUser && user && AVATAR}
+</div>
     );
 });
+
 
 ChatGroup.propTypes = {
 	isUser: PropTypes.bool,

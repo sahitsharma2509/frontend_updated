@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { HashLink } from 'react-router-hash-link';
 import TagWrapper from '../TagWrapper';
 import Icon from '../icon/Icon';
@@ -193,18 +193,17 @@ const Button = forwardRef<HTMLAnchorElement, IButtonProps>(
 			}
 			if (to) {
 				return (
-					<Link
-						ref={ref}
-						className={BTN_CLASS}
-						to={to}
-						rel='noopener'
-						target={target}
-						// eslint-disable-next-line react/jsx-props-no-spreading
-						{...disableProps}
-						// eslint-disable-next-line react/jsx-props-no-spreading
-						{...props}>
-						{INNER}
-					</Link>
+					<Link 
+					href={to} 
+					ref={ref}
+					className={BTN_CLASS}
+					rel='noopener'
+					target={target}
+					{...disableProps}
+					{...props}
+				>
+					{INNER}
+				</Link>
 				);
 			}
 			return (
@@ -223,6 +222,7 @@ const Button = forwardRef<HTMLAnchorElement, IButtonProps>(
 				</a>
 			);
 		}
+		
 		return (
 			<TagWrapper
 				ref={ref}

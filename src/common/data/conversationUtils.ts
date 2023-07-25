@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router';
-const BASE_URL = process.env.REACT_APP_DJANGO_BASE_URL
+const BASE_URL = process.env.NEXT_PUBLIC_DJANGO_BASE_URL
 const csrftoken = Cookies.get("csrftoken");
 
 
