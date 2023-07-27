@@ -55,6 +55,7 @@
 		"@babel/cli": "^7.22.5",
 		"@babel/plugin-transform-typescript": "^7.22.5",
 		"@babel/preset-env": "^7.22.5",
+		"@dqbd/tiktoken": "^1.0.7",
 		"@emotion/react": "^11.10.6",
 		"@emotion/styled": "^11.10.6",
 		"@hello-pangea/dnd": "^16.2.0",

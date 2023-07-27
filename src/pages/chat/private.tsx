@@ -34,6 +34,7 @@ import { useInfiniteQuery, useQuery } from 'react-query';
 import showNotification from '../../components/extras/showNotification';
 import  { Spin  } from 'antd';
 import CustomTextarea from '../../components/Chatbox';
+import { Tiktoken } from '@dqbd/tiktoken';
 
 
 import { PlusCircleOutlined,FilePdfTwoTone, DeleteOutlined } from '@ant-design/icons';
@@ -88,6 +89,7 @@ const WithListYTPage = () => {
 	axios.defaults.headers.common["X-CSRFToken"] = csrftoken;
 		const [isLoading, setIsLoading] = useState(false);
 		const [fileName, setFileName] = useState<string>('');
+		const { userProfileData } = useContext(AuthContext);
 
 		const [messageText, setMessageText] = useState('');
 		const BASE_URL = process.env.NEXT_PUBLIC_DJANGO_BASE_URL;
@@ -112,9 +114,21 @@ const WithListYTPage = () => {
 const [isFileUploading, setIsFileUploading] = useState(false);
 
 const [selectedConversationDetails, setSelectedConversationDetails] = useState({ conversation_id: null, conversation_title: "", knowledge_base: "" });
+const [tokenLimitReached, setTokenLimitReached] = useState(false);
 
 
+const [tokensRemaining, settokensRemaining] = useState(0);
 
+// Declare a new state variable
+const [hasNotificationBeenShown, setHasNotificationBeenShown] = useState(false);
+
+
+  
+  
+
+useEffect(() => {
+    console.log('Component re-rendered');
+}, []);
 
 
 
@@ -265,9 +279,15 @@ const [selectedConversationDetails, setSelectedConversationDetails] = useState({
 			  const handleMessage = (event: MessageEvent) => {
 				
 
-
 				const data = JSON.parse(event.data);
-				console.log('Received message:', data); 
+				console.log("Data:",data)
+
+
+				// Handle the tokens_used received from backend
+				const tokens_left = data.tokens_used;
+
+				settokensRemaining(tokens_left);
+				console.log('Tokens left:', tokens_left);
 		
 				// Decode the base64 message
 				const message = new TextDecoder('utf-8').decode(Uint8Array.from(atob(data.message), c => c.charCodeAt(0)));
@@ -507,7 +527,6 @@ const [selectedConversationDetails, setSelectedConversationDetails] = useState({
 			return Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
 		  }
 		
-
 		  const handleSubmit = async (e: React.FormEvent) => {
 			setIsLoading(true);
 			e.preventDefault();
@@ -515,11 +534,11 @@ const [selectedConversationDetails, setSelectedConversationDetails] = useState({
 			  if (!activeTab) {
 				throw new Error('Active tab is not set');
 			  }
-		  
+		
 			  if (!activeTab.conversation_id) {
 				throw new Error('Active tab does not have a conversation ID');
 			  }
-		  
+		
 			  const newMessage: IMessages = {
 				id: getRandomId(),
 				conversation: String(activeTab?.conversation_id) ?? "user"+String(getRandomId()),
@@ -527,8 +546,9 @@ const [selectedConversationDetails, setSelectedConversationDetails] = useState({
 				is_user: true,
 				text: messageText,
 				isFile: isFileUploaded, 
-    			fileName: isFileUploaded ? fileName : '', 
-
+				fileName: isFileUploaded ? fileName : '', 
+				isAlert: false, // User's message is not an alert
+		
 				created_at: new Date().toISOString(),
 				user: {
 				  id: "some_user_id",
@@ -541,35 +561,70 @@ const [selectedConversationDetails, setSelectedConversationDetails] = useState({
 				  password: "some_password",
 				},
 			  };
-		  
+		
 			  // Add the new user message to the state
 			  addNewMessage(newMessage);
 			  setMessageText('');
 			  setIsFileUploaded(false);
-				setFileName('');
-
+			  setFileName('');
+		
+			  console.log("Tokens :", userProfileData?.tokens_used);
+			  console.log("Tokens limit:", userProfileData?.token_limit);
+		
 			  await new Promise(resolve => setTimeout(resolve, 0));
-		  
+		
 			  const data = {
 				conversation: String(activeTab?.conversation_id),
 				is_user: true,
 				text: messageText,
 			  };
-		  
-			  // Send the message over the WebSocket connection
-			  if (socket && socket.readyState === WebSocket.OPEN) {
-				socket.send(JSON.stringify(data));
+		
+			  let tokenLimit = userProfileData?.token_limit || 0;
+			  let tokensUsed = tokenLimit - tokensRemaining;
+			  let percentUsed = (tokensUsed / tokenLimit) * 100;
+
+			  console.log("Tokens remaining",tokensRemaining);
+		
+			  if (percentUsed >= 95 && percentUsed < 100) {
+				showNotification(
+				  'Token limit warning', 
+				  `You have used over ${Math.round(percentUsed)}% of your token limit`, 
+				  'warning'
+				);
+			  }
+		
+			  if (tokensRemaining === 0 && userProfileData?.tokens_remaining === 0) {
+				const alertMessage: IMessages = {
+				  ...newMessage,
+				  is_user: false,
+				  text: "Token limit has been reached. Message not sent.",
+				  isAlert: true,
+				};
 				
-			  } else {
+				addNewMessage(alertMessage);
 				setIsLoading(false);
-				console.error('Cannot send message, WebSocket is not open');
+			  }
+			  
+			  
+			 else {
+				// Send the message over the WebSocket connection
+				if (socket && socket.readyState === WebSocket.OPEN) {
+				  socket.send(JSON.stringify(data));
+				} else {
+				  setIsLoading(false);
+				  console.error('Cannot send message, WebSocket is not open');
+				}
 			  }
 			} catch (error : any) {
-				setIsLoading(false);
+			  setIsLoading(false);
 			  console.error("Error in handleSubmit:", error);
 			  console.error("Error response:", error.response);
 			}
 		  }
+		
+		  
+		  
+		
 		  
     
 		  const addNewMessage = (newMessage: IMessages) => {
@@ -736,6 +791,9 @@ const [selectedConversationDetails, setSelectedConversationDetails] = useState({
                 />
             );
         })}
+
+
+
 </Chat>
                       </CardBody>
 					  

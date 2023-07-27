@@ -76,7 +76,7 @@ interface IAlertProps extends Record<string, any> {
 	rounded?: null | 'default' | 0 | 1 | 2 | 3 | 'pill';
 	borderWidth?: null | 0 | 1 | 2 | 3 | 4 | 5;
 }
-const Alert: FC<IAlertProps> = ({
+export const Alert: FC<IAlertProps> = ({
 	children,
 	className,
 	color,

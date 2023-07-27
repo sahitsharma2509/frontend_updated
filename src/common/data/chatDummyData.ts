@@ -15,6 +15,8 @@ export interface IMessages {
     isLastMessage?: boolean;
     isFile?:boolean;
     fileName?:string;
+    isAlert?: boolean;
+    alert?: JSX.Element;
 }
 
 

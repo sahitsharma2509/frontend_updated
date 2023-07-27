@@ -31,6 +31,9 @@ export interface IUserData {
 export interface IUserProfileData {
   user: IUserData;
   avatar: string | null;
+  tokens_used : number | null;
+  token_limit : number | null;
+  tokens_remaining : number | null;
 }
 
 
@@ -62,6 +65,9 @@ export const AuthContextProvider: FC<IAuthContextProviderProps> = ({ children })
   
           setUserProfileData({ 
             avatar: userResponse.data.avatar,
+            tokens_used : userResponse.data.tokens_used,
+            token_limit:userResponse.data.token_limit,
+            tokens_remaining : userResponse.data.tokens_remaining,
             user: {
               id: userResponse.data.user.id,
               username: userResponse.data.user.username,

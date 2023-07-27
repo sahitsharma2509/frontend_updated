@@ -18,6 +18,9 @@ import { useContext } from 'react';
 import AuthContext from '../contexts/authContext';
 import { FilePdfTwoTone,RobotOutlined } from '@ant-design/icons';
 import { Components } from 'react-markdown';
+import Link from 'next/link';
+import Alert from './bootstrap/Alert';
+import { AlertHeading } from './bootstrap/Alert';
 
 interface IConversationListItemProps extends HTMLAttributes<HTMLDivElement> {
     id: string;
@@ -312,6 +315,8 @@ interface IChatMessagesProps extends HTMLAttributes<HTMLDivElement> {
         message?: string;
 		isFile?: boolean;
 		fileName?: string;
+		isAlert?:boolean;
+		alert?: JSX.Element;
     }[];
     isUser?: boolean;
     isNewConversation?: boolean;
@@ -423,102 +428,124 @@ export const ChatMessages: FC<IChatMessagesProps> = ({ messages, isUser, isNewCo
 	  
 	
 
-	  return (
+	return (
 		<div className='chat-messages' {...props}>
-			{isUser
-				? messages.map((i) => (
-					<div
-  key={i.id}
-  className={classNames('chat-message', { 'chat-message-reply': isUser })}
->
-  {i.isFile && 
-    <div 
-      style={{ 
-        display: 'flex', 
-        alignItems: 'center', 
-        color: '#fff',
-        padding: '5px', 
-        borderRadius: '5px',
-        marginBottom: '10px' // added a margin to separate the file info from the message
-      }}
+  {isUser
+    ? messages.map((i) => (
+      <div
+        key={i.id}
+        className={classNames('chat-message', { 'chat-message-reply': isUser })}
+      >
+        {i.isFile && 
+          <div 
+            style={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              color: '#fff',
+              padding: '5px', 
+              borderRadius: '5px',
+              marginBottom: '10px' // added a margin to separate the file info from the message
+            }}
+          >
+            <FilePdfTwoTone style={{ marginRight: '10px' }} />
+            <span>{i.fileName}</span>
+          </div>
+        }
+        {i.message && <ReactMarkdown className='msg'>{i.message}</ReactMarkdown>}
+      </div>
+    ))
+    : messages.slice(0, currentMessageIndex).map((i) => (
+      <div
+        key={i.id}
+        className={classNames('chat-message', { 'chat-message-reply': isUser })}
+      >
+        {i.isAlert ? 
+          <Alert
+		    className='your-class-name'
+            color= 'danger'
+            isLight= {true}
+            isOutline= {true}
+            borderWidth= {1}
+            isDismissible= {false}
+            icon= 'PriorityHigh'
+            shadow= 'md'
+            rounded= 'default'
+          >
+            <AlertHeading
+              tag='h4'
+              className='your-heading-class-name'
+            >
+              {i.message}
+            </AlertHeading>
+          </Alert>
+        :
+          <>
+            <ReactMarkdown className='msg' components={components}>{currentMessageText || ''}</ReactMarkdown>
+            {showIcons && (
+              <div className="icon-container">
+                {copySuccess ? (
+                  <Icon icon="Check" className="icon-copy" size="lg" />
+                ) : (
+                  <>
+                    <Icon
+                      icon="ContentCopy"
+                      onClick={() => {
+                        if (i.message) {
+                          copy(i.message);
+                          setCopySuccess(true);
+                        }
+                      }}
+                      className="icon-copy"
+                    />
+                    <Icon 
+                      icon="Mic" 
+                      className="icon-mic" 
+                      size="lg" 
+                      color="info" 
+                      onClick={() => {
+                        callTextToSpeechAPI(i.message);
+                      }} 
+                    />
+                  </>
+                )}
+              </div>
+            )}
+          </>
+        }
+      </div>
+    ))}
+  {!isUser && isNewConversation && messages[currentMessageIndex] && (
+    <div
+      key={messages[currentMessageIndex].id}
+      className={classNames('chat-message', { 'chat-message-reply': isUser })}
     >
-      <FilePdfTwoTone style={{ marginRight: '10px' }} />
-      <span>{i.fileName}</span>
+      <ReactMarkdown className='msg' components={components}>{currentMessageText || ''}</ReactMarkdown>
+
+      {showIcons && (
+        <div className="icon-container">
+          {copySuccess ? (
+            <Icon icon="Check" className="icon-copy" size="lg" />
+          ) : (
+            <>
+              <Icon
+                icon="ContentCopy"
+                onClick={() => {
+                  copy(currentMessageText);
+                  setCopySuccess(true);
+                }}
+                className="icon-copy"
+              />
+              <Icon icon="Mic" className="icon-mic" size="lg" color="danger" />
+            </>
+          )}
+        </div>
+      )}
     </div>
-  }
-  {i.message && <ReactMarkdown className='msg'>{i.message}</ReactMarkdown>}
+  )}
 </div>
 
-				))
-				: messages.slice(0, currentMessageIndex).map((i) => (
-					<div
-						key={i.id}
-						className={classNames('chat-message', { 'chat-message-reply': isUser })}
-					>
-						<ReactMarkdown className='msg' components={components}>{currentMessageText || ''}</ReactMarkdown>
 
-						{showIcons && (
-							<div className="icon-container">
-								{copySuccess ? (
-									<Icon icon="Check" className="icon-copy" size="lg" />
-								) : (
-									<>
-										<Icon
-											icon="ContentCopy"
-											onClick={() => {
-												if (i.message) {
-													copy(i.message);
-													setCopySuccess(true);
-												}
-											}}
-											className="icon-copy"
-										/>
-	
-										<Icon 
-											icon="Mic" 
-											className="icon-mic" 
-											size="lg" 
-											color="info" 
-											onClick={() => {
-												callTextToSpeechAPI(i.message);
-											}} 
-										/>
-									</>
-								)}
-							</div>
-						)}
-					</div>
-				))}
-			{!isUser && isNewConversation && messages[currentMessageIndex] && (
-				<div
-					key={messages[currentMessageIndex].id}
-					className={classNames('chat-message', { 'chat-message-reply': isUser })}
-				>
-					<ReactMarkdown className='msg' components={components}>{currentMessageText || ''}</ReactMarkdown>
-
-					{showIcons && (
-						<div className="icon-container">
-							{copySuccess ? (
-								<Icon icon="Check" className="icon-copy" size="lg" />
-							) : (
-								<>
-									<Icon
-										icon="ContentCopy"
-										onClick={() => {
-											copy(currentMessageText);
-											setCopySuccess(true);
-										}}
-										className="icon-copy"
-									/>
-									<Icon icon="Mic" className="icon-mic" size="lg" color="danger" />
-								</>
-							)}
-						</div>
-					)}
-				</div>
-			)}
-		</div>
-	);
+	  );
 };
 
 
@@ -544,7 +571,8 @@ interface IChatGroupProps extends HTMLAttributes<HTMLDivElement> {
 		id?: string | number;
 		message?: string ;
 		isFile?: boolean;       // add this line
-        fileName?: string;      // add this line
+        fileName?: string;  
+		isAlert?: boolean;    // add this line
 	}[];
 	color?: TColor | 'link' | 'brand' | 'brand-two' | 'storybook';
 	src?: string;
